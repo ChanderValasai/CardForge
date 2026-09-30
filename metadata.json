@@ -1,0 +1,8 @@
+{
+  "name": "CardForge",
+  "description": "Intermediate full-stack flashcard web application for learning and interview preparation, built with React, Node.js, Express, and MongoDB.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

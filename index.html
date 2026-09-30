@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CardForge — Flashcard Learning Application</title>
+    <meta name="description" content="Intermediate full-stack flashcard web application for learning and interview preparation, built with React, Node.js, Express, and MongoDB." />
+    <meta property="og:title" content="CardForge — Flashcard Learning Application" />
+    <meta property="og:description" content="Intermediate full-stack flashcard web application for learning and interview preparation, built with React, Node.js, Express, and MongoDB." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script>
+      // Prevent sandboxed iframe WebSocket disconnects from surfacing as unhandled errors
+      window.addEventListener('unhandledrejection', function(event) {
+        var reason = event && event.reason;
+        var msg = reason ? (reason.message || reason.toString() || '') : '';
+        if (msg.indexOf('WebSocket') !== -1 || msg.indexOf('websocket') !== -1) {
+          event.preventDefault();
+        }
+      });
+      window.addEventListener('error', function(event) {
+        var msg = event && event.message ? event.message : '';
+        if (msg.indexOf('WebSocket') !== -1 || msg.indexOf('websocket') !== -1) {
+          event.preventDefault();
+        }
+      });
+    </script>
+  </head>
+  <body class="bg-slate-50 text-slate-900 font-sans antialiased min-h-screen">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
