@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { UserPlus, AlertCircle, Loader2 } from 'lucide-react';
+import { ArrowRight, BookOpen, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 
 export default function RegisterPage() {
@@ -28,7 +28,7 @@ export default function RegisterPage() {
       return;
     }
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long.');
+      setError('Password must be at least 6 characters.');
       return;
     }
     if (formData.password !== formData.confirmPassword) {
@@ -50,17 +50,22 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto px-4 py-16">
-      <div className="bg-white border border-slate-200 rounded-lg p-6 sm:p-8 shadow-2xs">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-slate-900">Create an Account</h1>
-          <p className="text-sm text-slate-600 mt-1">
-            Build your personal flashcards and track technical review progress.
+    <div className="max-w-md mx-auto px-4 py-12 sm:py-16">
+      <div className="bg-white border border-stone-200/90 rounded-2xl p-7 sm:p-8 shadow-2xs space-y-6">
+        <div className="space-y-1.5">
+          <div className="w-10 h-10 rounded-xl bg-stone-900 text-amber-300 flex items-center justify-center mb-3">
+            <BookOpen className="w-5 h-5" />
+          </div>
+          <h1 className="text-2xl font-bold text-stone-900">
+            Start learning today
+          </h1>
+          <p className="text-sm text-stone-600">
+            Create an account to study flashcards and track what you know.
           </p>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 rounded-md bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
+          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{error}</span>
           </div>
@@ -68,59 +73,55 @@ export default function RegisterPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="name">
-              Full Name
+            <label className="block text-xs font-semibold text-stone-700 mb-1" htmlFor="name">
+              Your Name
             </label>
             <input
               id="name"
               name="name"
               type="text"
               required
-              disabled={isSubmitting}
+              placeholder="e.g. Alex Chen"
               value={formData.name}
               onChange={handleChange}
-              placeholder="Alex Chen"
-              className="w-full px-3 py-2 text-sm rounded-md border border-slate-300 focus:outline-hidden focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-colors disabled:bg-slate-50 disabled:opacity-70"
+              className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-stone-300 focus:outline-hidden focus:ring-2 focus:ring-stone-900/10 focus:border-stone-900"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="email">
-              Email address
+            <label className="block text-xs font-semibold text-stone-700 mb-1" htmlFor="email">
+              Email Address
             </label>
             <input
               id="email"
               name="email"
               type="email"
-              autoComplete="email"
               required
-              disabled={isSubmitting}
+              placeholder="you@example.com"
               value={formData.email}
               onChange={handleChange}
-              placeholder="alex@example.com"
-              className="w-full px-3 py-2 text-sm rounded-md border border-slate-300 focus:outline-hidden focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-colors disabled:bg-slate-50 disabled:opacity-70"
+              className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-stone-300 focus:outline-hidden focus:ring-2 focus:ring-stone-900/10 focus:border-stone-900"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="password">
-              Password (min. 6 characters)
+            <label className="block text-xs font-semibold text-stone-700 mb-1" htmlFor="password">
+              Password
             </label>
             <input
               id="password"
               name="password"
               type="password"
               required
-              disabled={isSubmitting}
+              placeholder="At least 6 characters"
               value={formData.password}
               onChange={handleChange}
-              placeholder="••••••••"
-              className="w-full px-3 py-2 text-sm rounded-md border border-slate-300 focus:outline-hidden focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-colors disabled:bg-slate-50 disabled:opacity-70"
+              className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-stone-300 focus:outline-hidden focus:ring-2 focus:ring-stone-900/10 focus:border-stone-900"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="confirmPassword">
+            <label className="block text-xs font-semibold text-stone-700 mb-1" htmlFor="confirmPassword">
               Confirm Password
             </label>
             <input
@@ -128,36 +129,25 @@ export default function RegisterPage() {
               name="confirmPassword"
               type="password"
               required
-              disabled={isSubmitting}
+              placeholder="Re-enter password"
               value={formData.confirmPassword}
               onChange={handleChange}
-              placeholder="••••••••"
-              className="w-full px-3 py-2 text-sm rounded-md border border-slate-300 focus:outline-hidden focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-colors disabled:bg-slate-50 disabled:opacity-70"
+              className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-stone-300 focus:outline-hidden focus:ring-2 focus:ring-stone-900/10 focus:border-stone-900"
             />
           </div>
 
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-md bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold text-sm transition-colors shadow-2xs disabled:opacity-50"
           >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Creating account...</span>
-              </>
-            ) : (
-              <>
-                <UserPlus className="w-4 h-4" />
-                <span>Register</span>
-              </>
-            )}
+            {isSubmitting ? 'Creating account...' : 'Create Account'}
           </button>
         </form>
 
-        <div className="mt-6 pt-5 border-t border-slate-100 text-center text-xs text-slate-600">
-          Already have an account?{' '}
-          <Link to="/login" className="font-semibold text-slate-900 hover:underline">
+        <div className="pt-4 border-t border-stone-100 text-center text-xs text-stone-600">
+          <span>Already have an account? </span>
+          <Link to="/login" className="font-semibold text-stone-900 hover:underline">
             Sign in
           </Link>
         </div>

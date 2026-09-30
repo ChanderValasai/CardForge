@@ -13,6 +13,7 @@ import ExplorePage from './pages/ExplorePage.jsx';
 import StudyPage from './pages/StudyPage.jsx';
 import ReviewPage from './pages/ReviewPage.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
+import ProgressPage from './pages/ProgressPage.jsx';
 
 export default function App() {
   return (
@@ -33,6 +34,7 @@ export default function App() {
               <Route path="my-decks/:deckId" element={<DeckDetailPage />} />
               <Route path="study/:deckId" element={<StudyPage />} />
               <Route path="review" element={<ReviewPage />} />
+              <Route path="progress" element={<ProgressPage />} />
               <Route path="profile" element={<ProfilePage />} />
             </Route>
 

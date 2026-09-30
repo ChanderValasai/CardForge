@@ -1,166 +1,156 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 640" width="100%" height="100%">
   <defs>
-    <filter id="panel-shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
-      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.04" />
-      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#0f172a" flood-opacity="0.02" />
+    <filter id="soft-shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#1c1917" flood-opacity="0.05" />
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#1c1917" flood-opacity="0.03" />
     </filter>
   </defs>
 
-  <!-- Background -->
-  <rect width="1000" height="640" fill="#f8fafc" />
+  <!-- Warm Canvas Background -->
+  <rect width="1000" height="640" fill="#FAF9F5" />
 
   <!-- Navbar -->
-  <rect width="1000" height="56" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" />
-  <rect x="40" y="14" width="28" height="28" rx="6" fill="#0f172a" />
-  <path d="M47 28 L54 21 L61 28 L54 35 Z" fill="#34d399" />
-  <text x="76" y="33" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="16" font-weight="700" fill="#0f172a">CardForge</text>
-  <text x="180" y="33" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="600" fill="#0f172a">Dashboard</text>
-  <line x1="180" y1="42" x2="245" y2="42" stroke="#0f172a" stroke-width="2" />
-  <text x="270" y="33" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="500" fill="#64748b">My Decks</text>
-  <text x="360" y="33" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="500" fill="#64748b">Explore</text>
-  <text x="440" y="33" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="500" fill="#64748b">Review Queue</text>
+  <rect width="1000" height="56" fill="#FAF9F5" stroke="#e7e5e4" stroke-width="1" />
+  <rect x="50" y="14" width="28" height="28" rx="7" fill="#1c1917" />
+  <path d="M57 28 L64 21 L71 28 L64 35 Z" fill="#fcd34d" />
+  <text x="88" y="33" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="16" font-weight="700" letter-spacing="-0.3" fill="#1c1917">CardForge</text>
 
-  <!-- Welcome Banner -->
-  <g transform="translate(60, 80)">
-    <text x="0" y="24" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="22" font-weight="800" fill="#0f172a">Welcome back, Alex</text>
-    <text x="0" y="44" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" fill="#64748b">Your active recall progress and spaced repetition schedule</text>
+  <!-- Nav links -->
+  <text x="200" y="33" font-family="'Inter', system-ui, sans-serif" font-size="13" font-weight="600" fill="#1c1917">Dashboard</text>
+  <line x1="200" y1="42" x2="265" y2="42" stroke="#1c1917" stroke-width="2" stroke-linecap="round" />
+  <text x="290" y="33" font-family="'Inter', system-ui, sans-serif" font-size="13" font-weight="500" fill="#78716c">My Decks</text>
+  <text x="375" y="33" font-family="'Inter', system-ui, sans-serif" font-size="13" font-weight="500" fill="#78716c">Explore</text>
+  <text x="450" y="33" font-family="'Inter', system-ui, sans-serif" font-size="13" font-weight="500" fill="#78716c">Review</text>
+  <text x="525" y="33" font-family="'Inter', system-ui, sans-serif" font-size="13" font-weight="500" fill="#78716c">Progress</text>
 
-    <!-- Streak Badge -->
-    <rect x="235" y="6" width="115" height="24" rx="12" fill="#fef3c7" stroke="#fde68a" stroke-width="1" />
-    <text x="247" y="22" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="700" fill="#b45309">🔥 5 Day Streak</text>
+  <!-- Profile Chip -->
+  <rect x="840" y="14" width="110" height="28" rx="8" fill="#f5f5f4" stroke="#e7e5e4" stroke-width="1" />
+  <circle cx="856" cy="28" r="8" fill="#fef3c7" stroke="#fde68a" stroke-width="1" />
+  <text x="853" y="31" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="700" fill="#92400e">A</text>
+  <text x="872" y="32" font-family="'Inter', sans-serif" font-size="11" font-weight="600" fill="#44403c">Alex Chen</text>
 
-    <!-- Quick Action -->
-    <rect x="760" y="10" width="120" height="34" rx="6" fill="#0f172a" />
-    <text x="785" y="32" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="600" fill="#ffffff">+ Create Deck</text>
+  <!-- Welcoming Greeting Header -->
+  <g transform="translate(70, 80)">
+    <h1 font-family="'Plus Jakarta Sans', sans-serif">
+      <text x="0" y="24" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="24" font-weight="700" letter-spacing="-0.4" fill="#1c1917">Good morning, Alex</text>
+    </h1>
+    <text x="0" y="46" font-family="'Inter', system-ui, sans-serif" font-size="13" font-weight="400" fill="#78716c">Ready for a quick study session?</text>
   </g>
 
-  <!-- 4 KPI Summary Cards -->
-  <g transform="translate(60, 145)">
-    <!-- Card 1 -->
-    <rect x="0" y="0" width="205" height="88" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" filter="url(#panel-shadow)" />
-    <text x="16" y="24" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="600" fill="#64748b">CARDS PRACTICED</text>
-    <text x="16" y="56" font-family="monospace" font-size="26" font-weight="700" fill="#0f172a">58</text>
-    <text x="16" y="74" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" fill="#94a3b8">Across 8 sessions</text>
+  <!-- Primary Action Focal Point: Continue Learning Card -->
+  <g transform="translate(70, 142)">
+    <rect width="860" height="110" rx="16" fill="#ffffff" stroke="#e7e5e4" stroke-width="1" filter="url(#soft-shadow)" />
 
-    <!-- Card 2 -->
-    <rect x="225" y="0" width="205" height="88" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" filter="url(#panel-shadow)" />
-    <text x="241" y="24" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="600" fill="#059669">MASTERED</text>
-    <text x="241" y="56" font-family="monospace" font-size="26" font-weight="700" fill="#059669">42</text>
-    <text x="241" y="74" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" fill="#94a3b8">Interval &gt; 3 days</text>
+    <!-- Left Content -->
+    <g transform="translate(24, 20)">
+      <rect x="0" y="0" width="125" height="22" rx="6" fill="#fffbeb" stroke="#fef3c7" stroke-width="1" />
+      <text x="8" y="15" font-family="'Inter', sans-serif" font-size="11" font-weight="600" fill="#92400e">✨ Ready to continue</text>
 
-    <!-- Card 3 -->
-    <rect x="450" y="0" width="205" height="88" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" filter="url(#panel-shadow)" />
-    <text x="466" y="24" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="600" fill="#2563eb">AVG ACCURACY</text>
-    <text x="466" y="56" font-family="monospace" font-size="26" font-weight="700" fill="#0f172a">88%</text>
-    <text x="466" y="74" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" fill="#94a3b8">First-attempt recall</text>
+      <text x="0" y="44" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="18" font-weight="700" letter-spacing="-0.3" fill="#1c1917">
+        Continue with JavaScript Fundamentals
+      </text>
 
-    <!-- Card 4 -->
-    <rect x="675" y="0" width="205" height="88" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" filter="url(#panel-shadow)" />
-    <text x="691" y="24" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="600" fill="#d97706">DUE TODAY</text>
-    <text x="691" y="56" font-family="monospace" font-size="26" font-weight="700" fill="#d97706">4</text>
-    <text x="691" y="74" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" fill="#94a3b8">Ready for review queue</text>
-  </g>
-
-  <!-- Middle Section: Chart (Left) + Spaced Retention (Right) -->
-  <g transform="translate(60, 255)">
-    <!-- 7-Day Activity Chart Box -->
-    <rect x="0" y="0" width="560" height="210" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" filter="url(#panel-shadow)" />
-    <text x="20" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="700" fill="#0f172a">7-Day Study Volume</text>
-    <text x="20" y="44" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" fill="#64748b">Cards reviewed per day</text>
-
-    <!-- Bar Chart -->
-    <g transform="translate(20, 60)">
-      <line x1="0" y1="110" x2="520" y2="110" stroke="#f1f5f9" stroke-width="1" />
-
-      <!-- Day 1: Sun -->
-      <rect x="25" y="80" width="36" height="30" rx="3" fill="#cbd5e1" />
-      <text x="43" y="72" text-anchor="middle" font-family="monospace" font-size="10" fill="#64748b">6</text>
-      <text x="43" y="126" text-anchor="middle" font-family="monospace" font-size="10" fill="#64748b">Sun</text>
-
-      <!-- Day 2: Mon -->
-      <rect x="95" y="40" width="36" height="70" rx="3" fill="#0f172a" />
-      <text x="113" y="32" text-anchor="middle" font-family="monospace" font-size="10" fill="#0f172a">14</text>
-      <text x="113" y="126" text-anchor="middle" font-family="monospace" font-size="10" fill="#64748b">Mon</text>
-
-      <!-- Day 3: Tue -->
-      <rect x="165" y="60" width="36" height="50" rx="3" fill="#0f172a" />
-      <text x="183" y="52" text-anchor="middle" font-family="monospace" font-size="10" fill="#0f172a">10</text>
-      <text x="183" y="126" text-anchor="middle" font-family="monospace" font-size="10" fill="#64748b">Tue</text>
-
-      <!-- Day 4: Wed -->
-      <rect x="235" y="25" width="36" height="85" rx="3" fill="#0f172a" />
-      <text x="253" y="17" text-anchor="middle" font-family="monospace" font-size="10" fill="#0f172a">18</text>
-      <text x="253" y="126" text-anchor="middle" font-family="monospace" font-size="10" fill="#64748b">Wed</text>
-
-      <!-- Day 5: Thu -->
-      <rect x="305" y="70" width="36" height="40" rx="3" fill="#0f172a" />
-      <text x="323" y="62" text-anchor="middle" font-family="monospace" font-size="10" fill="#0f172a">8</text>
-      <text x="323" y="126" text-anchor="middle" font-family="monospace" font-size="10" fill="#64748b">Thu</text>
-
-      <!-- Day 6: Fri -->
-      <rect x="375" y="50" width="36" height="60" rx="3" fill="#0f172a" />
-      <text x="393" y="42" text-anchor="middle" font-family="monospace" font-size="10" fill="#0f172a">12</text>
-      <text x="393" y="126" text-anchor="middle" font-family="monospace" font-size="10" fill="#64748b">Fri</text>
-
-      <!-- Day 7: Sat (Today) -->
-      <rect x="445" y="30" width="36" height="80" rx="3" fill="#10b981" />
-      <text x="463" y="22" text-anchor="middle" font-family="monospace" font-size="10" font-weight="700" fill="#059669">16</text>
-      <text x="463" y="126" text-anchor="middle" font-family="monospace" font-size="10" font-weight="700" fill="#0f172a">Sat</text>
+      <text x="0" y="66" font-family="'Inter', system-ui, sans-serif" font-size="12.5" font-weight="400" fill="#78716c">
+        Revisit scope, closures, event loops, and lexical environment to lock them into memory.
+      </text>
     </g>
 
-    <!-- Spaced Retention Progress (Right) -->
-    <rect x="585" y="0" width="295" height="210" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" filter="url(#panel-shadow)" />
-    <text x="605" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="700" fill="#0f172a">Knowledge Retention</text>
-    <text x="605" y="44" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" fill="#64748b">SM-2 Spaced Repetition breakdown</text>
-
-    <!-- Progress 1 -->
-    <g transform="translate(605, 60)">
-      <text x="0" y="10" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="600" fill="#059669">Mastered (42 cards)</text>
-      <text x="235" y="10" font-family="monospace" font-size="11" font-weight="700" fill="#059669">72%</text>
-      <rect x="0" y="18" width="250" height="6" rx="3" fill="#f1f5f9" />
-      <rect x="0" y="18" width="180" height="6" rx="3" fill="#10b981" />
-    </g>
-
-    <!-- Progress 2 -->
-    <g transform="translate(605, 105)">
-      <text x="0" y="10" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="600" fill="#2563eb">Known (12 cards)</text>
-      <text x="235" y="10" font-family="monospace" font-size="11" font-weight="700" fill="#2563eb">21%</text>
-      <rect x="0" y="18" width="250" height="6" rx="3" fill="#f1f5f9" />
-      <rect x="0" y="18" width="52" height="6" rx="3" fill="#3b82f6" />
-    </g>
-
-    <!-- Progress 3 -->
-    <g transform="translate(605, 150)">
-      <text x="0" y="10" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="600" fill="#d97706">Review Queue (4 cards)</text>
-      <text x="235" y="10" font-family="monospace" font-size="11" font-weight="700" fill="#d97706">7%</text>
-      <rect x="0" y="18" width="250" height="6" rx="3" fill="#f1f5f9" />
-      <rect x="0" y="18" width="18" height="6" rx="3" fill="#f59e0b" />
+    <!-- Right CTA Button -->
+    <g transform="translate(680, 36)">
+      <rect width="156" height="42" rx="10" fill="#1c1917" />
+      <path d="M24 16 L32 21 L24 26 Z" fill="#fcd34d" />
+      <text x="40" y="26" font-family="'Inter', sans-serif" font-size="13" font-weight="600" fill="#ffffff">Continue Learning</text>
     </g>
   </g>
 
-  <!-- Bottom Section: Recent Sessions Table -->
-  <g transform="translate(60, 485)">
-    <rect x="0" y="0" width="880" height="130" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" filter="url(#panel-shadow)" />
-    <text x="20" y="26" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="700" fill="#0f172a">Recent Study Sessions</text>
+  <!-- Your Learning Section (Clean honest numbers) -->
+  <g transform="translate(70, 272)">
+    <div font-family="'Plus Jakarta Sans', sans-serif">
+      <text x="0" y="16" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="15" font-weight="700" letter-spacing="-0.2" fill="#1c1917">Your Learning</text>
+      <text x="860" y="16" text-anchor="end" font-family="'Inter', sans-serif" font-size="12" font-weight="600" fill="#78716c">View full progress →</text>
+    </div>
 
-    <!-- Row 1 -->
-    <line x1="20" y1="40" x2="860" y2="40" stroke="#f1f5f9" stroke-width="1" />
-    <text x="20" y="60" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="600" fill="#0f172a">React Fundamentals</text>
-    <rect x="180" y="48" width="52" height="18" rx="4" fill="#f1f5f9" />
-    <text x="188" y="61" font-family="monospace" font-size="10" fill="#475569">REACT</text>
-    <text x="320" y="60" font-family="monospace" font-size="11" fill="#64748b">10 cards</text>
-    <rect x="680" y="47" width="50" height="20" rx="4" fill="#ecfdf5" />
-    <text x="690" y="61" font-family="monospace" font-size="11" font-weight="700" fill="#059669">90%</text>
-    <text x="800" y="60" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" fill="#94a3b8">Today</text>
+    <!-- 3 Stat Cards -->
+    <g transform="translate(0, 26)">
+      <!-- Card 1 -->
+      <rect x="0" y="0" width="273" height="74" rx="12" fill="#ffffff" stroke="#e7e5e4" stroke-width="1" filter="url(#soft-shadow)" />
+      <text x="18" y="22" font-family="'Inter', sans-serif" font-size="11.5" font-weight="500" fill="#78716c">Reviewed</text>
+      <text x="18" y="50" font-family="'Plus Jakarta Sans', sans-serif" font-size="24" font-weight="700" fill="#1c1917">58</text>
+      <text x="60" y="50" font-family="'Inter', sans-serif" font-size="11" font-weight="400" fill="#a8a29e">cards total</text>
 
-    <!-- Row 2 -->
-    <line x1="20" y1="78" x2="860" y2="78" stroke="#f1f5f9" stroke-width="1" />
-    <text x="20" y="98" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="600" fill="#0f172a">JavaScript Deep Dive</text>
-    <rect x="180" y="86" width="76" height="18" rx="4" fill="#f1f5f9" />
-    <text x="188" y="99" font-family="monospace" font-size="10" fill="#475569">JAVASCRIPT</text>
-    <text x="320" y="98" font-family="monospace" font-size="11" fill="#64748b">12 cards</text>
-    <rect x="680" y="85" width="50" height="20" rx="4" fill="#ecfdf5" />
-    <text x="690" y="99" font-family="monospace" font-size="11" font-weight="700" fill="#059669">83%</text>
-    <text x="800" y="98" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" fill="#94a3b8">Yesterday</text>
+      <!-- Card 2 -->
+      <rect x="293" y="0" width="273" height="74" rx="12" fill="#ffffff" stroke="#e7e5e4" stroke-width="1" filter="url(#soft-shadow)" />
+      <text x="311" y="22" font-family="'Inter', sans-serif" font-size="11.5" font-weight="600" fill="#047857">Known</text>
+      <text x="311" y="50" font-family="'Plus Jakarta Sans', sans-serif" font-size="24" font-weight="700" fill="#065f46">42</text>
+      <text x="353" y="50" font-family="'Inter', sans-serif" font-size="11" font-weight="400" fill="#a8a29e">cards remembered</text>
+
+      <!-- Card 3 -->
+      <rect x="587" y="0" width="273" height="74" rx="12" fill="#ffffff" stroke="#e7e5e4" stroke-width="1" filter="url(#soft-shadow)" />
+      <text x="605" y="22" font-family="'Inter', sans-serif" font-size="11.5" font-weight="600" fill="#b45309">To Review</text>
+      <text x="605" y="50" font-family="'Plus Jakarta Sans', sans-serif" font-size="24" font-weight="700" fill="#92400e">4</text>
+      <text x="628" y="50" font-family="'Inter', sans-serif" font-size="11" font-weight="400" fill="#a8a29e">waiting for review</text>
+    </g>
+  </g>
+
+  <!-- Your Decks Section -->
+  <g transform="translate(70, 395)">
+    <text x="0" y="16" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="15" font-weight="700" letter-spacing="-0.2" fill="#1c1917">Your Decks</text>
+    <text x="0" y="32" font-family="'Inter', system-ui, sans-serif" font-size="11.5" font-weight="400" fill="#a8a29e">Jump right into any topic you're studying.</text>
+    <text x="860" y="20" text-anchor="end" font-family="'Inter', sans-serif" font-size="12" font-weight="600" fill="#1c1917">+ Manage Decks</text>
+
+    <!-- 2 Deck Cards Grid -->
+    <g transform="translate(0, 44)">
+      <!-- Deck 1: JavaScript (Amber Accent) -->
+      <g transform="translate(0, 0)">
+        <rect width="420" height="150" rx="14" fill="#ffffff" stroke="#e7e5e4" stroke-width="1" filter="url(#soft-shadow)" />
+        <path d="M0 14 Q0 0 14 0 L14 150 Q0 150 0 136 Z" fill="#f59e0b" />
+
+        <g transform="translate(24, 18)">
+          <rect x="0" y="0" width="76" height="20" rx="5" fill="#fffbeb" />
+          <text x="8" y="14" font-family="'Inter', sans-serif" font-size="10.5" font-weight="600" fill="#92400e">JavaScript</text>
+          <text x="375" y="14" text-anchor="end" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="500" fill="#a8a29e">5 cards</text>
+
+          <text x="0" y="44" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="15" font-weight="700" letter-spacing="-0.2" fill="#1c1917">
+            JavaScript Fundamentals
+          </text>
+          <text x="0" y="64" font-family="'Inter', system-ui, sans-serif" font-size="12" font-weight="400" fill="#78716c">
+            Scope, closures, event loop, hoisting, and prototypes.
+          </text>
+
+          <line x1="0" y1="86" x2="375" y2="86" stroke="#f5f5f4" stroke-width="1" />
+          <text x="0" y="108" font-family="'Inter', sans-serif" font-size="11" font-weight="500" fill="#a8a29e">Beginner</text>
+
+          <rect x="305" y="92" width="70" height="26" rx="7" fill="#1c1917" />
+          <path d="M322 101 L328 105 L322 109 Z" fill="#fcd34d" />
+          <text x="334" y="109" font-family="'Inter', sans-serif" font-size="11" font-weight="600" fill="#ffffff">Study</text>
+        </g>
+      </g>
+
+      <!-- Deck 2: React (Blue Accent) -->
+      <g transform="translate(440, 0)">
+        <rect width="420" height="150" rx="14" fill="#ffffff" stroke="#e7e5e4" stroke-width="1" filter="url(#soft-shadow)" />
+        <path d="M0 14 Q0 0 14 0 L14 150 Q0 150 0 136 Z" fill="#3b82f6" />
+
+        <g transform="translate(24, 18)">
+          <rect x="0" y="0" width="50" height="20" rx="5" fill="#eff6ff" />
+          <text x="8" y="14" font-family="'Inter', sans-serif" font-size="10.5" font-weight="600" fill="#1e40af">React</text>
+          <text x="375" y="14" text-anchor="end" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="500" fill="#a8a29e">5 cards</text>
+
+          <text x="0" y="44" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="15" font-weight="700" letter-spacing="-0.2" fill="#1c1917">
+            React Fundamentals
+          </text>
+          <text x="0" y="64" font-family="'Inter', system-ui, sans-serif" font-size="12" font-weight="400" fill="#78716c">
+            Components, hooks lifecycle, state management, and props.
+          </text>
+
+          <line x1="0" y1="86" x2="375" y2="86" stroke="#f5f5f4" stroke-width="1" />
+          <text x="0" y="108" font-family="'Inter', sans-serif" font-size="11" font-weight="500" fill="#a8a29e">Intermediate</text>
+
+          <rect x="305" y="92" width="70" height="26" rx="7" fill="#1c1917" />
+          <path d="M322 101 L328 105 L322 109 Z" fill="#fcd34d" />
+          <text x="334" y="109" font-family="'Inter', sans-serif" font-size="11" font-weight="600" fill="#ffffff">Study</text>
+        </g>
+      </g>
+    </g>
   </g>
 </svg>

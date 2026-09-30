@@ -1,7 +1,7 @@
-# CardForge — Developer Flashcard & Interview Prep Platform
+# CardForge — Student-First Flashcard Platform
 
 <p align="center">
-  <strong>Master technical interview concepts with distraction-free active recall and intelligent spaced repetition.</strong>
+  <strong>"Learning doesn't have to feel complicated." Master complex concepts with distraction-free active recall and intelligent spaced repetition.</strong>
 </p>
 
 <p align="center">
@@ -10,6 +10,7 @@
   <img src="https://img.shields.io/badge/MongoDB-Atlas_Ready-47A248?logo=mongodb&logoColor=white" alt="MongoDB" />
   <img src="https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
   <img src="https://img.shields.io/badge/TailwindCSS-v4-06B6D4?logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
+  <img src="https://img.shields.io/badge/Typography-Plus_Jakarta_Sans_%2B_Inter-1c1917" alt="Typography" />
   <img src="https://img.shields.io/badge/License-MIT-slate" alt="License" />
 </p>
 
@@ -17,29 +18,29 @@
 
 ## 📸 Application Previews
 
-### 1. Interactive Study Mode (Active Recall with 3D Card Flip)
-Full-screen, keyboard-first focus mode featuring 3D perspective flip animations, dark-themed code snippet rendering, collapsible hints, and instant self-evaluation.
+### 1. Focused Study Mode (Active Recall with 3D Flip)
+Distraction-free learning screen featuring smooth 3D card flips, readable typography with Plus Jakarta Sans & Inter, dark JetBrains Mono code snippets, collapsible hints, and intuitive `[1]` / `[2]` recall evaluation.
 
 <p align="center">
-  <img src="./docs/screenshots/study-session.svg" alt="CardForge Study Mode Interface" width="920" />
+  <img src="./docs/screenshots/study-session.png" alt="CardForge Study Mode Interface" width="920" />
 </p>
 
 ---
 
-### 2. Student Learning Dashboard & Analytics
-Live performance metrics, consecutive daily study streaks, a 7-day study volume bar chart, and an automated SM-2 Spaced Repetition retention breakdown.
+### 2. Action-First Student Dashboard
+Answers *"What should I do next?"* with a primary Continue Learning focal point, honest progress breakdown (Reviewed, Known, To Review), and recognizable deck cards with subtle category accents.
 
 <p align="center">
-  <img src="./docs/screenshots/dashboard-analytics.svg" alt="CardForge Learning Dashboard" width="920" />
+  <img src="./docs/screenshots/dashboard-analytics.png" alt="CardForge Learning Dashboard" width="920" />
 </p>
 
 ---
 
-### 3. Curated Technical Decks Catalog
-Explore pre-seeded interview question collections across JavaScript, React, SQL, TypeScript, and Web Fundamentals, or create custom decks.
+### 3. Explore & Decks Catalog
+Searchable collection of foundational topics across JavaScript, React, SQL, and Computer Science with clean category filters and quick-study actions.
 
 <p align="center">
-  <img src="./docs/screenshots/decks-catalog.svg" alt="CardForge Decks Catalog" width="920" />
+  <img src="./docs/screenshots/decks-catalog.png" alt="CardForge Decks Catalog" width="920" />
 </p>
 
 ---

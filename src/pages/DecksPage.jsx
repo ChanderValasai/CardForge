@@ -2,17 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Plus,
-  Layers,
+  Play,
   Edit2,
   Trash2,
-  Play,
   X,
-  Loader2,
-  AlertCircle,
-  CheckCircle2,
-  FolderPlus,
-  Lock,
-  Globe,
+  BookOpen,
+  ArrowRight,
+  Layers,
+  Sparkles,
 } from 'lucide-react';
 import { fetchDecks, createDeck, updateDeck, deleteDeck } from '../services/api.js';
 
@@ -24,7 +21,7 @@ export default function DecksPage() {
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState('create'); // 'create' | 'edit'
+  const [modalMode, setModalMode] = useState('create');
   const [activeDeckId, setActiveDeckId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [modalError, setModalError] = useState('');
@@ -33,12 +30,12 @@ export default function DecksPage() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    category: 'General',
+    category: 'JavaScript',
     difficulty: 'Beginner',
     isPublic: true,
   });
 
-  // Delete Confirmation State
+  // Delete State
   const [deleteDeckId, setDeleteDeckId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -65,7 +62,7 @@ export default function DecksPage() {
     setFormData({
       title: '',
       description: '',
-      category: 'General',
+      category: 'JavaScript',
       difficulty: 'Beginner',
       isPublic: true,
     });
@@ -73,7 +70,9 @@ export default function DecksPage() {
     setIsModalOpen(true);
   };
 
-  const openEditModal = (deck) => {
+  const openEditModal = (deck, e) => {
+    e.preventDefault();
+    e.stopPropagation();
     setModalMode('edit');
     setActiveDeckId(deck._id);
     setFormData({
@@ -87,44 +86,44 @@ export default function DecksPage() {
     setIsModalOpen(true);
   };
 
-  const handleModalSubmit = async (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (!formData.title.trim()) {
-      setModalError('Deck title is required.');
+      setModalError('Please give your deck a title.');
       return;
     }
 
     setIsSubmitting(true);
     setModalError('');
-
     try {
       if (modalMode === 'create') {
-        const res = await createDeck(formData);
-        setDecks([res.deck, ...decks]);
+        await createDeck(formData);
         setSuccessMessage('Deck created successfully.');
       } else {
-        const res = await updateDeck(activeDeckId, formData);
-        setDecks(decks.map((d) => (d._id === activeDeckId ? res.deck : d)));
+        await updateDeck(activeDeckId, formData);
         setSuccessMessage('Deck updated successfully.');
       }
       setIsModalOpen(false);
-      setTimeout(() => setSuccessMessage(''), 3500);
+      loadDecks();
+      setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
-      setModalError(err.message || 'Operation failed.');
+      setModalError(err.message || 'Failed to save deck.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleDeleteConfirm = async () => {
+  const confirmDelete = async (e) => {
+    e.preventDefault();
     if (!deleteDeckId) return;
+
     setIsDeleting(true);
     try {
       await deleteDeck(deleteDeckId);
-      setDecks(decks.filter((d) => d._id !== deleteDeckId));
       setDeleteDeckId(null);
-      setSuccessMessage('Deck deleted successfully.');
-      setTimeout(() => setSuccessMessage(''), 3500);
+      setSuccessMessage('Deck removed.');
+      loadDecks();
+      setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
       setError(err.message || 'Failed to delete deck.');
     } finally {
@@ -132,252 +131,267 @@ export default function DecksPage() {
     }
   };
 
-  const categories = [
-    'General',
-    'JavaScript',
-    'React',
-    'Backend',
-    'Databases',
-    'Web Development',
-    'System Design',
-    'Algorithms',
-  ];
+  // Subtle category styling
+  const getCategoryStyles = (category) => {
+    const cat = (category || '').toLowerCase();
+    if (cat.includes('javascript') || cat.includes('js')) {
+      return {
+        border: 'border-l-amber-500',
+        badge: 'text-amber-800 bg-amber-50/80',
+        dot: 'bg-amber-500',
+      };
+    }
+    if (cat.includes('react')) {
+      return {
+        border: 'border-l-blue-500',
+        badge: 'text-blue-800 bg-blue-50/80',
+        dot: 'bg-blue-500',
+      };
+    }
+    if (cat.includes('sql') || cat.includes('database')) {
+      return {
+        border: 'border-l-emerald-500',
+        badge: 'text-emerald-800 bg-emerald-50/80',
+        dot: 'bg-emerald-500',
+      };
+    }
+    if (cat.includes('computer science') || cat.includes('typescript')) {
+      return {
+        border: 'border-l-purple-500',
+        badge: 'text-purple-800 bg-purple-50/80',
+        dot: 'bg-purple-500',
+      };
+    }
+    return {
+      border: 'border-l-stone-400',
+      badge: 'text-stone-700 bg-stone-100',
+      dot: 'bg-stone-400',
+    };
+  };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-8">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">My Flashcard Decks</h1>
-          <p className="text-sm text-slate-600 mt-1">
-            Create, customize, and manage your private study material.
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-stone-900">
+            My Decks
+          </h1>
+          <p className="text-sm text-stone-600 mt-1">
+            Your personal collection of things you're learning.
           </p>
         </div>
-        <button
-          onClick={openCreateModal}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 text-white text-xs font-semibold rounded-md hover:bg-slate-800 transition-colors shadow-2xs self-start sm:self-auto"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Create New Deck</span>
-        </button>
+
+        <div>
+          <button
+            onClick={openCreateModal}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 transition-colors shadow-2xs"
+          >
+            <Plus className="w-4 h-4 text-amber-300" />
+            <span>Create Deck</span>
+          </button>
+        </div>
       </div>
 
-      {/* Alerts */}
+      {/* Success Notification */}
       {successMessage && (
-        <div className="mt-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-md flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+        <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium flex items-center justify-between">
           <span>{successMessage}</span>
+          <button onClick={() => setSuccessMessage('')} className="text-emerald-700 hover:text-emerald-900">
+            <X className="w-4 h-4" />
+          </button>
         </div>
       )}
 
-      {error && (
-        <div className="mt-4 p-3 bg-red-50 border border-red-200 text-red-800 text-xs rounded-md flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
-          <span>{error}</span>
-        </div>
-      )}
-
-      {/* Main Content Area */}
+      {/* Loading Skeleton */}
       {loading ? (
-        <div className="py-20 flex flex-col items-center justify-center text-slate-400">
-          <Loader2 className="w-6 h-6 animate-spin mb-3 text-slate-900" />
-          <span className="text-xs font-medium">Loading your decks...</span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="h-44 bg-stone-200/80 rounded-2xl animate-pulse" />
+          <div className="h-44 bg-stone-200/80 rounded-2xl animate-pulse" />
         </div>
       ) : decks.length === 0 ? (
-        <div className="my-10 bg-white border border-slate-200 rounded-lg p-10 text-center shadow-2xs">
-          <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center mx-auto mb-4">
-            <FolderPlus className="w-6 h-6" />
+        /* Empty Library State */
+        <div className="p-10 rounded-2xl bg-white border border-stone-200/90 shadow-2xs text-center space-y-4">
+          <div className="w-12 h-12 rounded-xl bg-stone-100 text-stone-600 flex items-center justify-center mx-auto">
+            <BookOpen className="w-6 h-6" />
           </div>
-          <h3 className="text-base font-semibold text-slate-900 mb-1">
-            You don't have any custom decks yet
-          </h3>
-          <p className="text-sm text-slate-500 max-w-md mx-auto mb-6">
-            Create a personalized deck to organize cards for your target concepts, or study our curated interview decks.
-          </p>
-          <div className="flex items-center justify-center gap-3">
+          <div className="space-y-1 max-w-sm mx-auto">
+            <h2 className="text-lg font-bold text-stone-900">Your library is empty</h2>
+            <p className="text-sm text-stone-600">
+              Create your own flashcard deck or explore curated technical topics to get started.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <button
               onClick={openCreateModal}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 text-white text-xs font-semibold rounded-md hover:bg-slate-800 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 shadow-2xs"
             >
-              <Plus className="w-4 h-4" />
-              Create First Deck
+              <Plus className="w-4 h-4 text-amber-300" />
+              <span>Create Deck</span>
             </button>
             <Link
               to="/explore"
-              className="inline-flex items-center gap-1.5 px-4 py-2 border border-slate-300 text-slate-700 text-xs font-semibold rounded-md hover:bg-slate-50 transition-colors"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-stone-200 text-stone-700 text-sm font-medium hover:bg-stone-50"
             >
-              Browse Seed Decks
+              <span>Explore Decks</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 my-8">
-          {decks.map((deck) => (
-            <div
-              key={deck._id}
-              className="bg-white border border-slate-200 rounded-lg p-5 shadow-2xs hover:border-slate-300 transition-all flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center justify-between gap-2 mb-3">
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
-                    {deck.category}
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`text-[10px] font-semibold px-2 py-0.5 rounded ${
-                        deck.difficulty === 'Beginner'
-                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                          : deck.difficulty === 'Intermediate'
-                          ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                          : 'bg-rose-50 text-rose-700 border border-rose-200'
-                      }`}
-                    >
-                      {deck.difficulty}
+        /* Decks Grid */
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+          {decks.map((deck) => {
+            const styles = getCategoryStyles(deck.category);
+
+            return (
+              <div
+                key={deck._id}
+                className={`p-5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs hover:shadow-xs transition-shadow border-l-4 ${styles.border} flex flex-col justify-between`}
+              >
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs text-stone-500">
+                    <span className={`px-2 py-0.5 rounded-md font-medium text-[11px] ${styles.badge}`}>
+                      {deck.category || 'General'}
                     </span>
-                    {deck.isPublic ? (
-                      <Globe className="w-3.5 h-3.5 text-slate-400" title="Public deck" />
-                    ) : (
-                      <Lock className="w-3.5 h-3.5 text-slate-400" title="Private deck" />
-                    )}
+                    <span className="font-mono text-stone-500">
+                      {deck.cardCount || 0} card{deck.cardCount === 1 ? '' : 's'}
+                    </span>
                   </div>
+
+                  <Link
+                    to={`/my-decks/${deck._id}`}
+                    className="block group"
+                  >
+                    <h2 className="text-base font-bold text-stone-900 group-hover:text-stone-700 leading-snug">
+                      {deck.title}
+                    </h2>
+                  </Link>
+
+                  <p className="text-xs sm:text-sm text-stone-600 line-clamp-2 leading-relaxed">
+                    {deck.description || 'No description added.'}
+                  </p>
                 </div>
 
-                <h3 className="text-base font-bold text-slate-900 mb-1.5 line-clamp-1">
-                  {deck.title}
-                </h3>
-                <p className="text-xs text-slate-600 mb-4 line-clamp-2 min-h-[32px]">
-                  {deck.description || 'No description provided.'}
-                </p>
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-xs text-slate-500 mb-4">
-                  <div className="flex items-center gap-1.5 font-mono">
-                    <Layers className="w-3.5 h-3.5 text-slate-400" />
-                    <span>{deck.cardCount || 0} cards</span>
-                  </div>
-                  <div className="flex items-center gap-1">
+                <div className="pt-4 mt-3 border-t border-stone-100 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
                     <button
-                      onClick={() => openEditModal(deck)}
-                      className="p-1.5 text-slate-500 hover:text-slate-900 rounded hover:bg-slate-100 transition-colors"
+                      onClick={(e) => openEditModal(deck, e)}
+                      className="p-1.5 text-stone-400 hover:text-stone-800 rounded-lg hover:bg-stone-100 transition-colors"
                       title="Edit deck"
+                      aria-label="Edit deck details"
                     >
                       <Edit2 className="w-3.5 h-3.5" />
                     </button>
                     <button
                       onClick={() => setDeleteDeckId(deck._id)}
-                      className="p-1.5 text-slate-500 hover:text-rose-600 rounded hover:bg-rose-50 transition-colors"
+                      className="p-1.5 text-stone-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-colors"
                       title="Delete deck"
+                      aria-label="Delete deck"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
-                </div>
 
-                <div className="grid grid-cols-2 gap-2">
-                  <Link
-                    to={`/my-decks/${deck._id}`}
-                    className="flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-md border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition-colors"
-                  >
-                    <Layers className="w-3.5 h-3.5 text-slate-500" />
-                    <span>Cards</span>
-                  </Link>
-                  <Link
-                    to={`/study/${deck._id}`}
-                    className="flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-md bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition-colors"
-                  >
-                    <Play className="w-3.5 h-3.5" />
-                    <span>Study</span>
-                  </Link>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      to={`/my-decks/${deck._id}`}
+                      className="px-3 py-1.5 rounded-lg border border-stone-200 text-stone-700 hover:bg-stone-50 text-xs font-medium transition-colors"
+                    >
+                      Manage Cards
+                    </Link>
+                    <Link
+                      to={`/study/${deck._id}`}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold transition-colors shadow-2xs"
+                    >
+                      <Play className="w-3 h-3 fill-current text-amber-300" />
+                      <span>Study</span>
+                    </Link>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
-      {/* Create / Edit Modal */}
+      {/* Create / Edit Deck Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-2xs">
-          <div className="bg-white rounded-lg border border-slate-200 shadow-xl max-w-lg w-full p-6 relative animate-in fade-in zoom-in-95 duration-150">
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="absolute right-4 top-4 p-1 text-slate-400 hover:text-slate-600 rounded"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <h2 className="text-lg font-bold text-slate-900 mb-1">
-              {modalMode === 'create' ? 'Create New Flashcard Deck' : 'Edit Flashcard Deck'}
-            </h2>
-            <p className="text-xs text-slate-500 mb-5">
-              Configure your deck title, subject category, and difficulty level.
-            </p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-xs">
+          <div className="w-full max-w-md rounded-2xl bg-white border border-stone-200 shadow-lg p-6 space-y-5">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-bold text-stone-900">
+                {modalMode === 'create' ? 'Create a New Deck' : 'Edit Deck'}
+              </h2>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="text-stone-400 hover:text-stone-700 p-1"
+                aria-label="Close modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
             {modalError && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-md">
+              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs">
                 {modalError}
               </div>
             )}
 
-            <form onSubmit={handleModalSubmit} className="space-y-4">
+            <form onSubmit={handleFormSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="deck-title">
+                <label className="block text-xs font-semibold text-stone-700 mb-1">
                   Deck Title *
                 </label>
                 <input
-                  id="deck-title"
                   type="text"
                   required
+                  placeholder="e.g. JavaScript Closures & Scope"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder="e.g., System Design Fundamentals"
-                  className="w-full px-3 py-2 text-sm rounded-md border border-slate-300 focus:outline-hidden focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
+                  className="w-full px-3 py-2 text-sm rounded-xl border border-stone-300 focus:outline-hidden focus:ring-2 focus:ring-stone-900/10 focus:border-stone-900"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="deck-description">
+                <label className="block text-xs font-semibold text-stone-700 mb-1">
                   Description
                 </label>
                 <textarea
-                  id="deck-description"
                   rows={3}
+                  placeholder="Brief note on what this deck covers..."
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Brief overview of what this deck covers..."
-                  className="w-full px-3 py-2 text-sm rounded-md border border-slate-300 focus:outline-hidden focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
+                  className="w-full px-3 py-2 text-sm rounded-xl border border-stone-300 focus:outline-hidden focus:ring-2 focus:ring-stone-900/10 focus:border-stone-900"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="deck-category">
+                  <label className="block text-xs font-semibold text-stone-700 mb-1">
                     Category
                   </label>
                   <select
-                    id="deck-category"
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full px-3 py-2 text-sm rounded-md border border-slate-300 focus:outline-hidden focus:border-slate-900 bg-white"
+                    className="w-full px-3 py-2 text-sm rounded-xl border border-stone-300 bg-white focus:outline-hidden focus:ring-2 focus:ring-stone-900/10"
                   >
-                    {categories.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat}
-                      </option>
-                    ))}
+                    <option value="JavaScript">JavaScript</option>
+                    <option value="React">React</option>
+                    <option value="SQL">SQL</option>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="General">General</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="deck-difficulty">
+                  <label className="block text-xs font-semibold text-stone-700 mb-1">
                     Difficulty
                   </label>
                   <select
-                    id="deck-difficulty"
                     value={formData.difficulty}
                     onChange={(e) => setFormData({ ...formData, difficulty: e.target.value })}
-                    className="w-full px-3 py-2 text-sm rounded-md border border-slate-300 focus:outline-hidden focus:border-slate-900 bg-white"
+                    className="w-full px-3 py-2 text-sm rounded-xl border border-stone-300 bg-white focus:outline-hidden focus:ring-2 focus:ring-stone-900/10"
                   >
                     <option value="Beginner">Beginner</option>
                     <option value="Intermediate">Intermediate</option>
@@ -386,34 +400,20 @@ export default function DecksPage() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 pt-2">
-                <input
-                  id="deck-public"
-                  type="checkbox"
-                  checked={formData.isPublic}
-                  onChange={(e) => setFormData({ ...formData, isPublic: e.target.checked })}
-                  className="w-4 h-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
-                />
-                <label htmlFor="deck-public" className="text-xs text-slate-700 select-none">
-                  Make this deck public in Explore directory
-                </label>
-              </div>
-
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-stone-100">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
+                  className="px-4 py-2 text-xs font-semibold text-stone-600 hover:text-stone-900 rounded-xl"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-900 text-white text-xs font-semibold rounded-md hover:bg-slate-800 transition-colors disabled:opacity-60"
+                  className="px-4 py-2 text-xs font-semibold text-white bg-stone-900 hover:bg-stone-800 rounded-xl shadow-2xs disabled:opacity-50"
                 >
-                  {isSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                  <span>{modalMode === 'create' ? 'Create Deck' : 'Save Changes'}</span>
+                  {isSubmitting ? 'Saving...' : modalMode === 'create' ? 'Create Deck' : 'Save Changes'}
                 </button>
               </div>
             </form>
@@ -421,31 +421,27 @@ export default function DecksPage() {
         </div>
       )}
 
-      {/* Delete Confirmation Dialog */}
+      {/* Delete Confirmation Modal */}
       {deleteDeckId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-2xs">
-          <div className="bg-white rounded-lg border border-slate-200 shadow-xl max-w-sm w-full p-6">
-            <h3 className="text-base font-bold text-slate-900 mb-2">Delete this deck?</h3>
-            <p className="text-xs text-slate-600 mb-6">
-              This action cannot be undone. All flashcards and study history associated with this deck will also be removed.
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-xs">
+          <div className="w-full max-w-sm rounded-2xl bg-white border border-stone-200 shadow-lg p-6 space-y-4">
+            <h2 className="text-base font-bold text-stone-900">Delete this deck?</h2>
+            <p className="text-xs text-stone-600 leading-relaxed">
+              This will remove the deck and all flashcards inside it. This action cannot be undone.
             </p>
-            <div className="flex items-center justify-end gap-2.5">
+            <div className="flex items-center justify-end gap-2 pt-2">
               <button
-                type="button"
-                disabled={isDeleting}
                 onClick={() => setDeleteDeckId(null)}
-                className="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
+                className="px-3.5 py-1.5 text-xs font-medium text-stone-600 hover:text-stone-900 rounded-lg"
               >
-                Cancel
+                Keep Deck
               </button>
               <button
-                type="button"
+                onClick={confirmDelete}
                 disabled={isDeleting}
-                onClick={handleDeleteConfirm}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-rose-600 text-white text-xs font-semibold rounded-md hover:bg-rose-700 transition-colors disabled:opacity-60"
+                className="px-3.5 py-1.5 text-xs font-medium text-white bg-rose-600 hover:bg-rose-500 rounded-lg shadow-2xs disabled:opacity-50"
               >
-                {isDeleting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                <span>Delete Deck</span>
+                {isDeleting ? 'Deleting...' : 'Delete'}
               </button>
             </div>
           </div>

@@ -1,474 +1,311 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  Layers,
-  CheckCircle2,
-  RotateCcw,
-  Plus,
-  ArrowRight,
-  Play,
-  Loader2,
-  Flame,
-  Award,
-  Calendar,
-  Clock,
-  TrendingUp,
-  Sparkles,
-} from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
-import { fetchDecks, fetchStudyStats } from '../services/api.js';
+import { fetchStudyStats, fetchDecks, fetchReviewQueue } from '../services/api.js';
+import { BookOpen, ArrowRight, Play, RotateCcw, Plus, Sparkles, CheckCircle2 } from 'lucide-react';
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const [userDecks, setUserDecks] = useState([]);
-  const [statsData, setStatsData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState(null);
+  const [decks, setDecks] = useState([]);
+  const [reviewDueCount, setReviewDueCount] = useState(0);
 
-  useEffect(() => {
-    Promise.all([
-      fetchDecks({ filter: 'my-decks' }),
-      fetchStudyStats().catch((err) => {
-        console.warn('Could not load stats:', err);
-        return null;
-      }),
-    ])
-      .then(([decksRes, statsRes]) => {
-        setUserDecks(decksRes.decks || []);
-        if (statsRes) setStatsData(statsRes);
-      })
-      .catch((err) => {
-        console.warn('Dashboard failed to load initial data:', err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, []);
-
-  const stats = statsData?.stats || {
-    totalSessions: 0,
-    totalCardsStudied: 0,
-    averageAccuracy: 0,
-    masteredCount: 0,
-    knownCount: 0,
-    learningCount: 0,
-    dueCount: 0,
-    streakDays: 0,
+  // Time-appropriate friendly greeting
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
   };
 
-  const weeklyActivity = statsData?.weeklyActivity || [];
-  const recentSessions = statsData?.recentSessions || [];
+  useEffect(() => {
+    let isMounted = true;
 
-  // Find max cards studied in 7 days for relative chart scaling
-  const maxWeekly = Math.max(...weeklyActivity.map((d) => d.cardsStudied), 10);
+    const loadDashboardData = async () => {
+      try {
+        setLoading(true);
+        const [statsData, decksData, reviewData] = await Promise.all([
+          fetchStudyStats().catch(() => ({})),
+          fetchDecks().catch(() => ({ decks: [] })),
+          fetchReviewQueue().catch(() => ({ queue: [] })),
+        ]);
+
+        if (isMounted) {
+          setStats(statsData);
+          setDecks(decksData.decks || []);
+          setReviewDueCount(reviewData.queue ? reviewData.queue.length : 0);
+        }
+      } catch (err) {
+        console.error('Error loading dashboard:', err);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadDashboardData();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Determine the next recommended learning action
+  const hasActivity = stats?.totalPracticed > 0 || (stats?.recentSessions && stats.recentSessions.length > 0);
+  const lastSession = stats?.recentSessions && stats.recentSessions.length > 0 ? stats.recentSessions[0] : null;
+  const recommendedDeck = lastSession?.deck || decks[0] || null;
+
+  // Deck category styling helper
+  const getCategoryTheme = (category) => {
+    const cat = (category || '').toLowerCase();
+    if (cat.includes('javascript') || cat.includes('js')) {
+      return { border: 'border-l-amber-500', tag: 'text-amber-800 bg-amber-50/80', dot: 'bg-amber-500' };
+    }
+    if (cat.includes('react')) {
+      return { border: 'border-l-blue-500', tag: 'text-blue-800 bg-blue-50/80', dot: 'bg-blue-500' };
+    }
+    if (cat.includes('sql') || cat.includes('database')) {
+      return { border: 'border-l-emerald-500', tag: 'text-emerald-800 bg-emerald-50/80', dot: 'bg-emerald-500' };
+    }
+    return { border: 'border-l-purple-500', tag: 'text-purple-800 bg-purple-50/80', dot: 'bg-purple-500' };
+  };
+
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12 animate-pulse space-y-6">
+        <div className="h-8 bg-stone-200 rounded-lg w-1/3" />
+        <div className="h-44 bg-stone-200 rounded-2xl w-full" />
+        <div className="grid grid-cols-3 gap-4">
+          <div className="h-20 bg-stone-200 rounded-xl" />
+          <div className="h-20 bg-stone-200 rounded-xl" />
+          <div className="h-20 bg-stone-200 rounded-xl" />
+        </div>
+      </div>
+    );
+  }
+
+  const firstName = user?.name ? user.name.split(' ')[0] : 'there';
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-      {/* Top Welcome Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-200">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider bg-slate-100 px-2 py-0.5 rounded">
-              Learning Dashboard
-            </span>
-            {stats.streakDays > 0 && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
-                <Flame className="w-3 h-3 fill-amber-500 text-amber-500" />
-                <span>{stats.streakDays} Day Streak</span>
-              </span>
-            )}
-          </div>
-          <h1 className="text-2xl font-bold text-slate-900">
-            Welcome back, {user?.name || 'Developer'}
-          </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Signed in as <span className="font-mono text-slate-700">{user?.email}</span>
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2 self-start md:self-auto">
-          <Link
-            to="/my-decks"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-900 text-white text-xs font-semibold rounded-md hover:bg-slate-800 transition-colors shadow-2xs"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Create Deck</span>
-          </Link>
-          <Link
-            to="/explore"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 border border-slate-300 text-slate-700 text-xs font-semibold rounded-md hover:bg-slate-50 transition-colors"
-          >
-            <span>Explore Catalog</span>
-          </Link>
-        </div>
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-10">
+      {/* 1. Welcoming Header */}
+      <div>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-stone-900">
+          {getGreeting()}, {firstName}
+        </h1>
+        <p className="text-sm text-stone-600 mt-1">
+          {hasActivity
+            ? 'Ready for a quick study session?'
+            : 'Pick a deck and begin your first session.'}
+        </p>
       </div>
 
-      {/* Due Review Notice Banner if cards are waiting */}
-      {stats.dueCount > 0 && (
-        <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs animate-in fade-in duration-150">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
-              <Clock className="w-4 h-4" />
+      {/* 2. Primary Focal Point: What to do next */}
+      {hasActivity ? (
+        <section aria-labelledby="continue-learning-heading">
+          <h2 id="continue-learning-heading" className="sr-only">Continue Learning</h2>
+          <div className="p-6 sm:p-7 rounded-2xl bg-white border border-stone-200/90 shadow-sm relative overflow-hidden">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+              <div className="space-y-2 max-w-lg">
+                <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-md">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                  <span>Ready to continue</span>
+                </div>
+
+                <h3 className="text-xl font-bold text-stone-900">
+                  {reviewDueCount > 0 ? (
+                    <>You have {reviewDueCount} card{reviewDueCount === 1 ? '' : 's'} to review</>
+                  ) : recommendedDeck ? (
+                    <>Continue with {recommendedDeck.title}</>
+                  ) : (
+                    <>Ready for your next review</>
+                  )}
+                </h3>
+
+                <p className="text-sm text-stone-600 leading-relaxed">
+                  {reviewDueCount > 0
+                    ? 'Revisit the concepts you marked for practice to lock them into long-term memory.'
+                    : recommendedDeck?.description || 'A quick 5-minute study session keeps your recall sharp.'}
+                </p>
+              </div>
+
+              <div className="shrink-0">
+                {reviewDueCount > 0 ? (
+                  <Link
+                    to="/review"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-stone-900 text-white font-medium text-sm hover:bg-stone-800 transition-colors shadow-2xs w-full sm:w-auto"
+                  >
+                    <RotateCcw className="w-4 h-4 text-amber-300" />
+                    <span>Review Cards</span>
+                  </Link>
+                ) : recommendedDeck ? (
+                  <Link
+                    to={`/study/${recommendedDeck._id}`}
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-stone-900 text-white font-medium text-sm hover:bg-stone-800 transition-colors shadow-2xs w-full sm:w-auto"
+                  >
+                    <Play className="w-4 h-4 fill-current text-amber-300" />
+                    <span>Continue Learning</span>
+                  </Link>
+                ) : (
+                  <Link
+                    to="/explore"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-stone-900 text-white font-medium text-sm hover:bg-stone-800 transition-colors shadow-2xs w-full sm:w-auto"
+                  >
+                    <span>Browse Decks</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                )}
+              </div>
             </div>
-            <div>
-              <h4 className="text-xs font-bold text-amber-900">
-                Spaced Repetition: {stats.dueCount} {stats.dueCount === 1 ? 'card' : 'cards'} due for review today
-              </h4>
-              <p className="text-[11px] text-amber-700">
-                Reinforce these concepts now before your memory retention begins to fade.
+          </div>
+        </section>
+      ) : (
+        /* Empty State when new user hasn't studied yet */
+        <section aria-labelledby="start-learning-heading">
+          <h2 id="start-learning-heading" className="sr-only">Start Learning</h2>
+          <div className="p-8 rounded-2xl bg-white border border-stone-200/90 shadow-2xs text-center space-y-4">
+            <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-800 flex items-center justify-center mx-auto">
+              <BookOpen className="w-6 h-6" />
+            </div>
+            <div className="space-y-1 max-w-md mx-auto">
+              <h3 className="text-lg font-bold text-stone-900">
+                Ready to start learning?
+              </h3>
+              <p className="text-sm text-stone-600">
+                Choose a deck from the catalog or explore foundational topics to begin your first active recall session.
               </p>
             </div>
+            <div className="pt-1">
+              <Link
+                to="/explore"
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-stone-900 text-white font-medium text-sm hover:bg-stone-800 transition-colors shadow-2xs"
+              >
+                <span>Explore Decks</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
           </div>
-          <Link
-            to="/review"
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-amber-600 text-white text-xs font-semibold rounded-md hover:bg-amber-700 transition-colors self-start sm:self-auto shrink-0 shadow-2xs"
-          >
-            <span>Review Queue</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
+        </section>
       )}
 
-      {/* Primary KPI Metrics Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 my-6">
-        {/* Total Cards Studied */}
-        <div className="p-4 bg-white border border-slate-200 rounded-lg shadow-2xs">
-          <div className="flex items-center justify-between text-xs text-slate-500 mb-1.5">
-            <span className="font-semibold text-slate-600">Cards Practiced</span>
-            <Layers className="w-4 h-4 text-slate-400" />
-          </div>
-          <div className="text-2xl font-bold font-mono text-slate-900">
-            {stats.totalCardsStudied}
-          </div>
-          <p className="text-[11px] text-slate-500 mt-1">
-            Across {stats.totalSessions} {stats.totalSessions === 1 ? 'session' : 'sessions'}
-          </p>
-        </div>
-
-        {/* Mastered Cards */}
-        <div className="p-4 bg-white border border-slate-200 rounded-lg shadow-2xs">
-          <div className="flex items-center justify-between text-xs text-slate-500 mb-1.5">
-            <span className="font-semibold text-emerald-800">Mastered</span>
-            <Award className="w-4 h-4 text-emerald-600" />
-          </div>
-          <div className="text-2xl font-bold font-mono text-emerald-700">
-            {stats.masteredCount}
-          </div>
-          <p className="text-[11px] text-slate-500 mt-1">Repeatedly recalled accurately</p>
-        </div>
-
-        {/* Average Accuracy */}
-        <div className="p-4 bg-white border border-slate-200 rounded-lg shadow-2xs">
-          <div className="flex items-center justify-between text-xs text-slate-500 mb-1.5">
-            <span className="font-semibold text-slate-600">Avg Accuracy</span>
-            <TrendingUp className="w-4 h-4 text-blue-500" />
-          </div>
-          <div className="text-2xl font-bold font-mono text-slate-900">
-            {stats.averageAccuracy}%
-          </div>
-          <p className="text-[11px] text-slate-500 mt-1">Recall success rate</p>
-        </div>
-
-        {/* Active Streak */}
-        <div className="p-4 bg-white border border-slate-200 rounded-lg shadow-2xs">
-          <div className="flex items-center justify-between text-xs text-slate-500 mb-1.5">
-            <span className="font-semibold text-amber-800">Study Streak</span>
-            <Flame className="w-4 h-4 text-amber-500" />
-          </div>
-          <div className="text-2xl font-bold font-mono text-amber-600">
-            {stats.streakDays} <span className="text-xs font-normal text-slate-500">days</span>
-          </div>
-          <p className="text-[11px] text-slate-500 mt-1">Daily consistency</p>
-        </div>
-      </div>
-
-      {/* Analytics & Activity Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 my-6">
-        {/* Weekly 7-Day Activity Chart */}
-        <div className="lg:col-span-2 bg-white border border-slate-200 rounded-lg p-5 shadow-2xs flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="text-sm font-bold text-slate-900">7-Day Study Volume</h3>
-              <p className="text-xs text-slate-500 mt-0.5">Cards practiced each day this week</p>
-            </div>
-            <span className="text-xs font-mono font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">
-              Last 7 Days
-            </span>
-          </div>
-
-          {/* Bar Chart Container */}
-          <div className="pt-4 pb-2">
-            <div className="h-36 flex items-end justify-between gap-2 sm:gap-4 px-2 border-b border-slate-100">
-              {weeklyActivity.map((day, idx) => {
-                const heightPercent =
-                  maxWeekly > 0 ? Math.min(100, Math.max(8, (day.cardsStudied / maxWeekly) * 100)) : 8;
-                const hasActivity = day.cardsStudied > 0;
-                return (
-                  <div key={idx} className="flex-1 flex flex-col items-center gap-1 group">
-                    <span className="text-[10px] font-mono text-slate-400 group-hover:text-slate-900 transition-colors">
-                      {hasActivity ? day.cardsStudied : ''}
-                    </span>
-                    <div
-                      style={{ height: `${heightPercent}%` }}
-                      className={`w-full max-w-[36px] rounded-t transition-all duration-300 ${
-                        hasActivity
-                          ? 'bg-slate-900 hover:bg-slate-700'
-                          : 'bg-slate-100 hover:bg-slate-200'
-                      }`}
-                      title={`${day.date}: ${day.cardsStudied} cards studied`}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-            <div className="flex justify-between px-2 pt-2">
-              {weeklyActivity.map((day, idx) => (
-                <span
-                  key={idx}
-                  className="flex-1 text-center text-[10px] font-medium text-slate-500 font-mono"
-                >
-                  {day.day}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Spaced Repetition Mastery Distribution */}
-        <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-2xs flex flex-col justify-between">
-          <div>
-            <h3 className="text-sm font-bold text-slate-900 mb-1">Knowledge Retention</h3>
-            <p className="text-xs text-slate-500 mb-4">Cards categorized by spaced repetition</p>
-
-            <div className="space-y-3">
-              <div>
-                <div className="flex items-center justify-between text-xs mb-1">
-                  <span className="font-semibold text-emerald-800 flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                    <span>Mastered (Interval &gt; 3d)</span>
-                  </span>
-                  <span className="font-mono font-bold text-slate-900">{stats.masteredCount}</span>
-                </div>
-                <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-emerald-500 rounded-full"
-                    style={{
-                      width: `${
-                        stats.masteredCount + stats.knownCount + stats.learningCount > 0
-                          ? (stats.masteredCount /
-                              (stats.masteredCount + stats.knownCount + stats.learningCount)) *
-                            100
-                          : 0
-                      }%`,
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between text-xs mb-1">
-                  <span className="font-semibold text-blue-800 flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-blue-500" />
-                    <span>Known (Interval 1-3d)</span>
-                  </span>
-                  <span className="font-mono font-bold text-slate-900">{stats.knownCount}</span>
-                </div>
-                <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-blue-500 rounded-full"
-                    style={{
-                      width: `${
-                        stats.masteredCount + stats.knownCount + stats.learningCount > 0
-                          ? (stats.knownCount /
-                              (stats.masteredCount + stats.knownCount + stats.learningCount)) *
-                            100
-                          : 0
-                      }%`,
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between text-xs mb-1">
-                  <span className="font-semibold text-amber-800 flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-amber-500" />
-                    <span>Learning / Review Queue</span>
-                  </span>
-                  <span className="font-mono font-bold text-slate-900">{stats.learningCount}</span>
-                </div>
-                <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-amber-500 rounded-full"
-                    style={{
-                      width: `${
-                        stats.masteredCount + stats.knownCount + stats.learningCount > 0
-                          ? (stats.learningCount /
-                              (stats.masteredCount + stats.knownCount + stats.learningCount)) *
-                            100
-                          : 0
-                      }%`,
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="pt-4 border-t border-slate-100 mt-4">
+      {/* 3. Your Learning (Honest, clean progress numbers — NOT a complex dashboard) */}
+      <section aria-labelledby="your-learning-heading">
+        <div className="flex items-center justify-between mb-3">
+          <h2 id="your-learning-heading" className="text-base font-bold text-stone-900">
+            Your Learning
+          </h2>
+          {hasActivity && (
             <Link
-              to="/review"
-              className="w-full flex items-center justify-center gap-1.5 py-1.5 text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 rounded border border-slate-200 transition-colors"
+              to="/progress"
+              className="text-xs font-semibold text-stone-600 hover:text-stone-950 inline-flex items-center gap-1"
             >
-              <span>Open Spaced Review Queue</span>
+              <span>View full progress</span>
+              <ArrowRight className="w-3 h-3" />
+            </Link>
+          )}
+        </div>
+
+        <div className="grid grid-cols-3 gap-3 sm:gap-4">
+          <div className="p-4 rounded-xl bg-white border border-stone-200/80 shadow-2xs text-center sm:text-left">
+            <span className="text-xs text-stone-500 font-medium">Reviewed</span>
+            <div className="text-2xl font-bold text-stone-900 mt-1 font-sans">
+              {stats?.totalPracticed || 0}
+            </div>
+            <span className="text-[11px] text-stone-400">cards total</span>
+          </div>
+
+          <div className="p-4 rounded-xl bg-white border border-stone-200/80 shadow-2xs text-center sm:text-left">
+            <span className="text-xs text-emerald-700 font-medium">Known</span>
+            <div className="text-2xl font-bold text-emerald-800 mt-1 font-sans">
+              {stats?.masteredCount || 0}
+            </div>
+            <span className="text-[11px] text-stone-400">cards remembered</span>
+          </div>
+
+          <div className="p-4 rounded-xl bg-white border border-stone-200/80 shadow-2xs text-center sm:text-left">
+            <span className="text-xs text-amber-700 font-medium">To Review</span>
+            <div className="text-2xl font-bold text-amber-800 mt-1 font-sans">
+              {reviewDueCount}
+            </div>
+            <span className="text-[11px] text-stone-400">waiting for review</span>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. Your Decks */}
+      <section aria-labelledby="your-decks-heading">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 id="your-decks-heading" className="text-base font-bold text-stone-900">
+              Your Decks
+            </h2>
+            <p className="text-xs text-stone-500">Jump right into any topic you're studying.</p>
+          </div>
+          <Link
+            to="/my-decks"
+            className="inline-flex items-center gap-1 text-xs font-semibold text-stone-800 hover:text-stone-950"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Manage Decks</span>
+          </Link>
+        </div>
+
+        {decks.length === 0 ? (
+          <div className="p-6 rounded-2xl bg-white border border-dashed border-stone-200 text-center space-y-3">
+            <p className="text-sm text-stone-600">No personal decks created yet.</p>
+            <Link
+              to="/explore"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-800 hover:text-stone-950"
+            >
+              <span>Explore curated decks</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
-        </div>
-      </div>
-
-      {/* Recent Study Sessions Table */}
-      {recentSessions.length > 0 && (
-        <div className="my-6 bg-white border border-slate-200 rounded-lg p-5 shadow-2xs">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-bold text-slate-900">Recent Study Sessions</h3>
-            <span className="text-xs text-slate-400 font-mono">Last {recentSessions.length} sessions</span>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
-                  <th className="pb-2">Deck</th>
-                  <th className="pb-2">Category</th>
-                  <th className="pb-2 text-center">Cards</th>
-                  <th className="pb-2 text-center">Accuracy</th>
-                  <th className="pb-2 text-right">Date</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {recentSessions.map((s) => (
-                  <tr key={s._id} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="py-2.5 font-semibold text-slate-900">{s.deckTitle}</td>
-                    <td className="py-2.5 text-slate-600">
-                      <span className="bg-slate-100 px-1.5 py-0.5 rounded text-[10px] uppercase font-bold text-slate-500">
-                        {s.category}
-                      </span>
-                    </td>
-                    <td className="py-2.5 text-center font-mono text-slate-700">{s.totalCards}</td>
-                    <td className="py-2.5 text-center">
-                      <span
-                        className={`inline-block font-mono font-bold px-2 py-0.5 rounded text-[11px] ${
-                          s.accuracy >= 80
-                            ? 'bg-emerald-50 text-emerald-700'
-                            : s.accuracy >= 50
-                            ? 'bg-amber-50 text-amber-700'
-                            : 'bg-rose-50 text-rose-700'
-                        }`}
-                      >
-                        {s.accuracy}%
-                      </span>
-                    </td>
-                    <td className="py-2.5 text-right text-slate-500 font-mono text-[11px]">
-                      {new Date(s.completedAt).toLocaleDateString(undefined, {
-                        month: 'short',
-                        day: 'numeric',
-                      })}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* Your Decks Section */}
-      <div className="my-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-bold text-slate-900">Your Decks ({userDecks.length})</h2>
-          <Link
-            to="/my-decks"
-            className="text-xs font-semibold text-slate-700 hover:text-slate-900 flex items-center gap-1"
-          >
-            <span>View All</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-
-        {loading ? (
-          <div className="py-12 flex justify-center text-slate-400">
-            <Loader2 className="w-6 h-6 animate-spin" />
-          </div>
-        ) : userDecks.length === 0 ? (
-          <div className="bg-white border border-slate-200 rounded-lg p-8 text-center shadow-2xs">
-            <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center mx-auto mb-3">
-              <Layers className="w-6 h-6" />
-            </div>
-            <h3 className="text-base font-semibold text-slate-900 mb-1">
-              You haven't created any custom decks yet
-            </h3>
-            <p className="text-xs text-slate-600 max-w-md mx-auto mb-6">
-              Create your own deck to organize technical interview questions, or study curated seed decks in Explore.
-            </p>
-            <div className="flex items-center justify-center gap-3">
-              <Link
-                to="/my-decks"
-                className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-900 text-white text-xs font-semibold rounded-md hover:bg-slate-800 transition-colors"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Create Your First Deck</span>
-              </Link>
-              <Link
-                to="/explore"
-                className="inline-flex items-center gap-1.5 px-4 py-2 border border-slate-300 rounded-md text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
-              >
-                <span>Explore Seed Decks</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {userDecks.slice(0, 3).map((deck) => (
-              <div
-                key={deck._id}
-                className="bg-white border border-slate-200 rounded-lg p-4 shadow-2xs flex flex-col justify-between hover:border-slate-300 transition-all"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] uppercase font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
-                      {deck.category}
-                    </span>
-                    <span className="text-xs font-mono text-slate-500">
-                      {deck.cardCount || 0} cards
-                    </span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {decks.slice(0, 4).map((deck) => {
+              const theme = getCategoryTheme(deck.category);
+              return (
+                <div
+                  key={deck._id}
+                  className={`p-5 rounded-xl bg-white border border-stone-200/90 shadow-2xs hover:shadow-xs transition-shadow border-l-4 ${theme.border} flex flex-col justify-between`}
+                >
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between text-xs text-stone-500">
+                      <span className={`px-2 py-0.5 rounded-md font-medium text-[11px] ${theme.tag}`}>
+                        {deck.category || 'General'}
+                      </span>
+                      <span>{deck.cardCount || 0} cards</span>
+                    </div>
+
+                    <h3 className="font-semibold text-stone-900 text-base leading-snug">
+                      {deck.title}
+                    </h3>
+
+                    <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed">
+                      {deck.description || 'No description provided.'}
+                    </p>
                   </div>
-                  <h4 className="font-bold text-slate-900 text-sm mb-1 line-clamp-1">
-                    {deck.title}
-                  </h4>
-                  <p className="text-xs text-slate-600 line-clamp-2 mb-3">
-                    {deck.description || 'No description provided.'}
-                  </p>
+
+                  <div className="pt-4 mt-2 flex items-center justify-between border-t border-stone-100">
+                    <span className="text-[11px] font-medium text-stone-400 capitalize">
+                      {deck.difficulty || 'beginner'}
+                    </span>
+                    <Link
+                      to={`/study/${deck._id}`}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-medium transition-colors"
+                    >
+                      <Play className="w-3 h-3 fill-current text-amber-300" />
+                      <span>Study</span>
+                    </Link>
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
-                  <Link
-                    to={`/my-decks/${deck._id}`}
-                    className="flex items-center justify-center gap-1 py-1.5 px-2 rounded border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition-colors"
-                  >
-                    <span>Cards</span>
-                  </Link>
-                  <Link
-                    to={`/study/${deck._id}`}
-                    className="flex items-center justify-center gap-1 py-1.5 px-2 rounded bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition-colors"
-                  >
-                    <Play className="w-3 h-3" />
-                    <span>Study</span>
-                  </Link>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
-      </div>
+      </section>
     </div>
   );
 }

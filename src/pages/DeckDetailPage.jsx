@@ -6,18 +6,13 @@ import {
   Play,
   Edit2,
   Trash2,
+  X,
+  Code,
   Copy,
   Check,
-  Code,
-  HelpCircle,
-  Lightbulb,
-  X,
-  Loader2,
-  AlertCircle,
-  CheckCircle2,
-  Layers,
   ChevronDown,
   ChevronUp,
+  Lightbulb,
 } from 'lucide-react';
 import {
   fetchCardsByDeck,
@@ -36,20 +31,15 @@ export default function DeckDetailPage() {
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
-  // Expand states for answer, hint, explanation
   const [expandedCards, setExpandedCards] = useState({});
-  const [copiedCardId, setCopiedCardId] = useState(null);
+  const [copiedCodeId, setCopiedCodeId] = useState(null);
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState('create'); // 'create' | 'edit'
+  const [modalMode, setModalMode] = useState('create');
   const [activeCardId, setActiveCardId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [modalError, setModalError] = useState('');
-
-  // Delete Confirmation State
-  const [deleteCardId, setDeleteCardId] = useState(null);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -58,8 +48,11 @@ export default function DeckDetailPage() {
     hint: '',
     explanation: '',
     codeSnippet: '',
-    difficulty: 'Medium',
   });
+
+  // Delete State
+  const [deleteCardId, setDeleteCardId] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const loadDeckAndCards = async () => {
     setLoading(true);
@@ -68,14 +61,8 @@ export default function DeckDetailPage() {
       const data = await fetchCardsByDeck(deckId);
       setDeck(data.deck);
       setCards(data.cards || []);
-      // Expand all answers by default for easy review
-      const initialExpanded = {};
-      (data.cards || []).forEach((c) => {
-        initialExpanded[c._id] = true;
-      });
-      setExpandedCards(initialExpanded);
     } catch (err) {
-      setError(err.message || 'Failed to load deck flashcards.');
+      setError(err.message || 'Failed to load deck details.');
     } finally {
       setLoading(false);
     }
@@ -85,20 +72,20 @@ export default function DeckDetailPage() {
     loadDeckAndCards();
   }, [deckId]);
 
-  const toggleExpand = (cardId) => {
+  const toggleExpand = (id) => {
     setExpandedCards((prev) => ({
       ...prev,
-      [cardId]: !prev[cardId],
+      [id]: !prev[id],
     }));
   };
 
-  const handleCopyCode = (cardId, code) => {
-    navigator.clipboard.writeText(code);
-    setCopiedCardId(cardId);
-    setTimeout(() => setCopiedCardId(null), 2000);
+  const handleCopyCode = (id, snippet) => {
+    navigator.clipboard.writeText(snippet);
+    setCopiedCodeId(id);
+    setTimeout(() => setCopiedCodeId(null), 2000);
   };
 
-  const openCreateModal = () => {
+  const openAddCardModal = () => {
     setModalMode('create');
     setActiveCardId(null);
     setFormData({
@@ -107,68 +94,63 @@ export default function DeckDetailPage() {
       hint: '',
       explanation: '',
       codeSnippet: '',
-      difficulty: 'Medium',
     });
     setModalError('');
     setIsModalOpen(true);
   };
 
-  const openEditModal = (card) => {
+  const openEditCardModal = (card) => {
     setModalMode('edit');
     setActiveCardId(card._id);
     setFormData({
-      question: card.question,
-      answer: card.answer,
+      question: card.question || '',
+      answer: card.answer || '',
       hint: card.hint || '',
       explanation: card.explanation || '',
       codeSnippet: card.codeSnippet || '',
-      difficulty: card.difficulty || 'Medium',
     });
     setModalError('');
     setIsModalOpen(true);
   };
 
-  const handleModalSubmit = async (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (!formData.question.trim() || !formData.answer.trim()) {
-      setModalError('Both question and answer are required.');
+      setModalError('Both a Question and an Answer are required.');
       return;
     }
 
     setIsSubmitting(true);
     setModalError('');
-
     try {
       if (modalMode === 'create') {
-        const res = await createCard(deckId, formData);
-        setCards([...cards, res.card]);
-        setExpandedCards((prev) => ({ ...prev, [res.card._id]: true }));
-        setSuccessMessage('Flashcard added successfully.');
+        await createCard(deckId, formData);
+        setSuccessMessage('Card added to deck.');
       } else {
-        const res = await updateCard(activeCardId, formData);
-        setCards(cards.map((c) => (c._id === activeCardId ? res.card : c)));
-        setSuccessMessage('Flashcard updated successfully.');
+        await updateCard(activeCardId, formData);
+        setSuccessMessage('Card updated.');
       }
       setIsModalOpen(false);
-      setTimeout(() => setSuccessMessage(''), 3500);
+      loadDeckAndCards();
+      setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
-      setModalError(err.message || 'Failed to save flashcard.');
+      setModalError(err.message || 'Failed to save card.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleDeleteCard = async () => {
+  const confirmDeleteCard = async () => {
     if (!deleteCardId) return;
     setIsDeleting(true);
     try {
       await deleteCard(deleteCardId);
-      setCards(cards.filter((c) => c._id !== deleteCardId));
       setDeleteCardId(null);
-      setSuccessMessage('Flashcard deleted successfully.');
-      setTimeout(() => setSuccessMessage(''), 3500);
+      setSuccessMessage('Card deleted.');
+      loadDeckAndCards();
+      setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
-      setError(err.message || 'Failed to delete flashcard.');
+      setError(err.message || 'Failed to delete card.');
     } finally {
       setIsDeleting(false);
     }
@@ -176,277 +158,230 @@ export default function DeckDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-[50vh] flex flex-col items-center justify-center text-slate-500">
-        <Loader2 className="w-6 h-6 animate-spin mb-3 text-slate-900" />
-        <span className="text-xs font-medium">Loading deck & flashcards...</span>
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 animate-pulse space-y-4">
+        <div className="h-6 bg-stone-200 rounded w-1/4" />
+        <div className="h-28 bg-stone-200 rounded-2xl w-full" />
+        <div className="h-20 bg-stone-200 rounded-xl w-full" />
       </div>
     );
   }
 
   if (error || !deck) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-16 text-center">
-        <div className="w-12 h-12 rounded-full bg-red-50 text-red-600 flex items-center justify-center mx-auto mb-3">
-          <AlertCircle className="w-6 h-6" />
-        </div>
-        <h2 className="text-lg font-bold text-slate-900 mb-1">Unable to Load Deck</h2>
-        <p className="text-sm text-slate-600 mb-6">{error || 'Deck not found.'}</p>
+      <div className="max-w-md mx-auto px-4 py-16 text-center space-y-4">
+        <p className="text-stone-700 font-medium">{error || 'Deck not found.'}</p>
         <Link
           to="/my-decks"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 text-white text-xs font-semibold rounded-md hover:bg-slate-800 transition-colors"
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-stone-900 text-white text-xs font-semibold"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Return to My Decks</span>
+          <span>Back to Decks</span>
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-      {/* Navigation Breadcrumb & Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => navigate(-1)}
-            className="p-1.5 text-slate-500 hover:text-slate-900 rounded-md hover:bg-slate-100 transition-colors"
-            title="Go back"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
-                {deck.category}
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-8">
+      {/* Top Breadcrumb */}
+      <div>
+        <Link
+          to="/my-decks"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-500 hover:text-stone-900 transition-colors"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>Back to My Decks</span>
+        </Link>
+      </div>
+
+      {/* Deck Header Card */}
+      <div className="p-6 rounded-2xl bg-white border border-stone-200/90 shadow-2xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2 text-xs text-stone-500">
+              <span className="px-2 py-0.5 rounded-md font-medium text-[11px] bg-stone-100 text-stone-700">
+                {deck.category || 'General'}
               </span>
-              <span
-                className={`text-[10px] font-semibold px-2 py-0.5 rounded ${
-                  deck.difficulty === 'Beginner'
-                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                    : deck.difficulty === 'Intermediate'
-                    ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                    : 'bg-rose-50 text-rose-700 border border-rose-200'
-                }`}
-              >
-                {deck.difficulty}
-              </span>
-              <span className="text-xs text-slate-400 font-mono">
-                {cards.length} {cards.length === 1 ? 'card' : 'cards'}
-              </span>
+              <span>·</span>
+              <span className="capitalize">{deck.difficulty || 'beginner'}</span>
+              <span>·</span>
+              <span>{cards.length} card{cards.length === 1 ? '' : 's'}</span>
             </div>
-            <h1 className="text-2xl font-bold text-slate-900">{deck.title}</h1>
+
+            <h1 className="text-2xl font-bold text-stone-900 leading-tight">
+              {deck.title}
+            </h1>
+
             {deck.description && (
-              <p className="text-sm text-slate-600 mt-1 max-w-2xl">{deck.description}</p>
+              <p className="text-sm text-stone-600 leading-relaxed max-w-xl">
+                {deck.description}
+              </p>
             )}
           </div>
-        </div>
 
-        <div className="flex items-center gap-2 self-start sm:self-auto">
-          {cards.length > 0 && (
-            <Link
-              to={`/study/${deck._id}`}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-md hover:bg-emerald-700 transition-colors shadow-2xs"
-            >
-              <Play className="w-3.5 h-3.5 fill-current" />
-              <span>Study Deck</span>
-            </Link>
-          )}
-
-          {deck.isOwner && (
+          <div className="flex items-center gap-2.5 shrink-0">
             <button
-              onClick={openCreateModal}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-900 text-white text-xs font-semibold rounded-md hover:bg-slate-800 transition-colors shadow-2xs"
+              onClick={openAddCardModal}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-stone-200 hover:bg-stone-50 text-stone-800 text-xs font-semibold transition-colors"
             >
-              <Plus className="w-3.5 h-3.5" />
+              <Plus className="w-4 h-4" />
               <span>Add Card</span>
             </button>
-          )}
+
+            {cards.length > 0 && (
+              <Link
+                to={`/study/${deck._id}`}
+                className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold transition-colors shadow-2xs"
+              >
+                <Play className="w-3.5 h-3.5 fill-current text-amber-300" />
+                <span>Study Deck</span>
+              </Link>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Notifications */}
+      {/* Success Notification */}
       {successMessage && (
-        <div className="mt-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-md flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+        <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium flex items-center justify-between">
           <span>{successMessage}</span>
+          <button onClick={() => setSuccessMessage('')} className="text-emerald-700 hover:text-emerald-900">
+            <X className="w-4 h-4" />
+          </button>
         </div>
       )}
 
-      {/* Flashcards List */}
-      <div className="my-8">
+      {/* Cards List */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between text-xs text-stone-500 px-1">
+          <h2 className="font-bold text-stone-800 text-sm">Flashcards ({cards.length})</h2>
+          <span>Click card to reveal full answer</span>
+        </div>
+
         {cards.length === 0 ? (
-          <div className="bg-white border border-slate-200 rounded-lg p-10 text-center shadow-2xs">
-            <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center mx-auto mb-3">
-              <Layers className="w-6 h-6" />
-            </div>
-            <h3 className="text-base font-semibold text-slate-900 mb-1">
-              No flashcards in this deck yet
-            </h3>
-            <p className="text-sm text-slate-500 max-w-md mx-auto mb-6">
-              Add your first technical interview question, answer, code snippet, and explanation to begin learning.
-            </p>
-            {deck.isOwner && (
-              <button
-                onClick={openCreateModal}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 text-white text-xs font-semibold rounded-md hover:bg-slate-800 transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Add First Flashcard</span>
-              </button>
-            )}
+          <div className="p-10 rounded-2xl bg-white border border-dashed border-stone-200 text-center space-y-3">
+            <p className="text-sm text-stone-600">This deck has no flashcards yet.</p>
+            <button
+              onClick={openAddCardModal}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-stone-900 text-white text-xs font-semibold shadow-2xs"
+            >
+              <Plus className="w-4 h-4 text-amber-300" />
+              <span>Add the First Card</span>
+            </button>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {cards.map((card, idx) => {
-              const isExpanded = expandedCards[card._id];
+              const isExpanded = !!expandedCards[card._id];
+
               return (
                 <div
                   key={card._id}
-                  className="bg-white border border-slate-200 rounded-lg shadow-2xs transition-all overflow-hidden"
+                  className="rounded-2xl bg-white border border-stone-200/90 shadow-2xs overflow-hidden transition-all"
                 >
-                  {/* Card Header / Question Row */}
-                  <div className="p-5 flex items-start justify-between gap-4 bg-white">
-                    <div className="flex items-start gap-3 flex-1">
-                      <span className="shrink-0 w-6 h-6 rounded bg-slate-100 text-slate-600 font-mono text-xs font-bold flex items-center justify-center">
-                        {idx + 1}
-                      </span>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1.5">
-                          <span
-                            className={`text-[10px] font-semibold px-2 py-0.5 rounded ${
-                              card.difficulty === 'Easy'
-                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                                : card.difficulty === 'Medium'
-                                ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                                : 'bg-rose-50 text-rose-700 border border-rose-200'
-                            }`}
-                          >
-                            {card.difficulty}
+                  <div
+                    onClick={() => toggleExpand(card._id)}
+                    className="p-4 sm:p-5 cursor-pointer hover:bg-stone-50/50 flex items-start justify-between gap-4"
+                  >
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2 text-xs text-stone-400">
+                        <span className="font-semibold text-stone-500 font-mono">
+                          Card {idx + 1}
+                        </span>
+                        {card.hint && (
+                          <span className="inline-flex items-center gap-1 text-[11px] text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded">
+                            <Lightbulb className="w-3 h-3" />
+                            <span>Has hint</span>
                           </span>
-                          {card.codeSnippet && (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-mono bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">
-                              <Code className="w-3 h-3" />
-                              <span>Code</span>
-                            </span>
-                          )}
-                          {card.hint && (
-                            <span className="inline-flex items-center gap-1 text-[10px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">
-                              <Lightbulb className="w-3 h-3" />
-                              <span>Hint</span>
-                            </span>
-                          )}
-                        </div>
-                        <h3 className="text-base font-semibold text-slate-900 leading-snug">
-                          {card.question}
-                        </h3>
+                        )}
+                        {card.codeSnippet && (
+                          <span className="inline-flex items-center gap-1 text-[11px] text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded">
+                            <Code className="w-3 h-3" />
+                            <span>Code snippet</span>
+                          </span>
+                        )}
                       </div>
+
+                      <h3 className="text-base font-semibold text-stone-900 leading-snug">
+                        {card.question}
+                      </h3>
                     </div>
 
-                    {/* Actions */}
-                    <div className="flex items-center gap-1 shrink-0">
-                      {deck.isOwner && (
-                        <>
-                          <button
-                            onClick={() => openEditModal(card)}
-                            className="p-1.5 text-slate-400 hover:text-slate-800 rounded hover:bg-slate-100 transition-colors"
-                            title="Edit card"
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => setDeleteCardId(card._id)}
-                            className="p-1.5 text-slate-400 hover:text-rose-600 rounded hover:bg-rose-50 transition-colors"
-                            title="Delete card"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </>
-                      )}
+                    <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        onClick={() => openEditCardModal(card)}
+                        className="p-1.5 text-stone-400 hover:text-stone-800 rounded-lg hover:bg-stone-100 transition-colors"
+                        title="Edit card"
+                        aria-label="Edit card"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => setDeleteCardId(card._id)}
+                        className="p-1.5 text-stone-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-colors"
+                        title="Delete card"
+                        aria-label="Delete card"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                       <button
                         onClick={() => toggleExpand(card._id)}
-                        className="p-1.5 text-slate-400 hover:text-slate-800 rounded hover:bg-slate-100 transition-colors"
-                        title={isExpanded ? 'Collapse card' : 'Expand card'}
+                        className="p-1.5 text-stone-400 hover:text-stone-700 rounded-lg transition-colors ml-1"
+                        aria-label={isExpanded ? 'Collapse card' : 'Expand card'}
                       >
-                        {isExpanded ? (
-                          <ChevronUp className="w-4 h-4" />
-                        ) : (
-                          <ChevronDown className="w-4 h-4" />
-                        )}
+                        {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                       </button>
                     </div>
                   </div>
 
-                  {/* Expandable Details Area */}
+                  {/* Expanded Content */}
                   {isExpanded && (
-                    <div className="px-5 pb-5 pt-1 border-t border-slate-100 bg-slate-50/50 space-y-4">
-                      {/* Answer Section */}
+                    <div className="px-4 sm:px-5 pb-5 pt-2 border-t border-stone-100 space-y-3 bg-stone-50/40 text-left">
                       <div>
-                        <div className="text-[11px] uppercase font-bold tracking-wider text-slate-500 mb-1.5 flex items-center gap-1.5">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                          <span>Answer</span>
-                        </div>
-                        <div className="text-sm text-slate-800 bg-white p-3.5 rounded-md border border-slate-200 leading-relaxed whitespace-pre-wrap">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-800">
+                          Answer
+                        </span>
+                        <p className="text-sm text-stone-800 leading-relaxed mt-1">
                           {card.answer}
-                        </div>
+                        </p>
                       </div>
 
-                      {/* Code Snippet */}
                       {card.codeSnippet && (
                         <div>
-                          <div className="flex items-center justify-between mb-1.5 text-[11px] uppercase font-bold tracking-wider text-slate-500">
-                            <span className="flex items-center gap-1.5">
-                              <Code className="w-3.5 h-3.5 text-slate-600" />
-                              <span>Code Example</span>
-                            </span>
+                          <div className="flex items-center justify-between text-[11px] text-stone-400 mb-1">
+                            <span>Code Example</span>
                             <button
                               onClick={() => handleCopyCode(card._id, card.codeSnippet)}
-                              className="inline-flex items-center gap-1 text-[11px] font-mono normal-case text-slate-500 hover:text-slate-900 p-1 rounded"
+                              className="inline-flex items-center gap-1 text-stone-500 hover:text-stone-800"
                             >
-                              {copiedCardId === card._id ? (
+                              {copiedCodeId === card._id ? (
                                 <>
-                                  <Check className="w-3.5 h-3.5 text-emerald-600" />
-                                  <span className="text-emerald-600">Copied</span>
+                                  <Check className="w-3 h-3 text-emerald-600" />
+                                  <span>Copied</span>
                                 </>
                               ) : (
                                 <>
-                                  <Copy className="w-3.5 h-3.5" />
+                                  <Copy className="w-3 h-3" />
                                   <span>Copy</span>
                                 </>
                               )}
                             </button>
                           </div>
-                          <pre className="p-3.5 bg-slate-900 text-slate-100 rounded-md font-mono text-xs overflow-x-auto leading-relaxed border border-slate-800">
-                            <code>{card.codeSnippet}</code>
+                          <pre className="p-3 rounded-xl bg-stone-900 text-stone-200 text-xs font-mono overflow-x-auto">
+                            {card.codeSnippet}
                           </pre>
                         </div>
                       )}
 
-                      {/* Hint & Explanation Grid */}
-                      {(card.hint || card.explanation) && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
-                          {card.hint && (
-                            <div className="p-3 bg-amber-50/70 border border-amber-200/80 rounded-md">
-                              <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-amber-800 mb-1">
-                                <Lightbulb className="w-3.5 h-3.5 text-amber-600" />
-                                <span>Hint</span>
-                              </div>
-                              <p className="text-xs text-amber-900 leading-relaxed">
-                                {card.hint}
-                              </p>
-                            </div>
-                          )}
+                      {card.hint && (
+                        <div className="p-2.5 rounded-lg bg-amber-50/70 border border-amber-200/60 text-xs text-amber-900 leading-relaxed">
+                          <strong>Hint:</strong> {card.hint}
+                        </div>
+                      )}
 
-                          {card.explanation && (
-                            <div className="p-3 bg-blue-50/70 border border-blue-200/80 rounded-md">
-                              <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-blue-800 mb-1">
-                                <HelpCircle className="w-3.5 h-3.5 text-blue-600" />
-                                <span>Why It Matters</span>
-                              </div>
-                              <p className="text-xs text-blue-900 leading-relaxed">
-                                {card.explanation}
-                              </p>
-                            </div>
-                          )}
+                      {card.explanation && (
+                        <div className="p-2.5 rounded-lg bg-stone-100 text-xs text-stone-700 leading-relaxed">
+                          <strong>Explanation:</strong> {card.explanation}
                         </div>
                       )}
                     </div>
@@ -456,138 +391,115 @@ export default function DeckDetailPage() {
             })}
           </div>
         )}
-      </div>
+      </section>
 
       {/* Add / Edit Card Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-2xs overflow-y-auto">
-          <div className="bg-white rounded-lg border border-slate-200 shadow-xl max-w-xl w-full p-6 relative animate-in fade-in zoom-in-95 duration-150 my-8">
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="absolute right-4 top-4 p-1 text-slate-400 hover:text-slate-600 rounded"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <h2 className="text-lg font-bold text-slate-900 mb-1">
-              {modalMode === 'create' ? 'Add New Flashcard' : 'Edit Flashcard'}
-            </h2>
-            <p className="text-xs text-slate-500 mb-5">
-              Include questions, concise answers, code examples, and interview hints.
-            </p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-xs">
+          <div className="w-full max-w-lg rounded-2xl bg-white border border-stone-200 shadow-lg p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-bold text-stone-900">
+                {modalMode === 'create' ? 'Add Flashcard' : 'Edit Flashcard'}
+              </h2>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="text-stone-400 hover:text-stone-700 p-1"
+                aria-label="Close modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
             {modalError && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-md">
+              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs">
                 {modalError}
               </div>
             )}
 
-            <form onSubmit={handleModalSubmit} className="space-y-4">
+            <form onSubmit={handleFormSubmit} className="space-y-3.5">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="card-question">
+                <label className="block text-xs font-semibold text-stone-700 mb-1">
                   Question *
                 </label>
                 <textarea
-                  id="card-question"
                   rows={2}
                   required
+                  placeholder="e.g. What is the difference between synchronous and asynchronous code?"
                   value={formData.question}
                   onChange={(e) => setFormData({ ...formData, question: e.target.value })}
-                  placeholder="e.g. What is the difference between Array.prototype.map and forEach?"
-                  className="w-full px-3 py-2 text-sm rounded-md border border-slate-300 focus:outline-hidden focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
+                  className="w-full px-3 py-2 text-sm rounded-xl border border-stone-300 focus:outline-hidden focus:ring-2 focus:ring-stone-900/10 focus:border-stone-900"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="card-answer">
+                <label className="block text-xs font-semibold text-stone-700 mb-1">
                   Answer *
                 </label>
                 <textarea
-                  id="card-answer"
                   rows={3}
                   required
+                  placeholder="Clear, concise explanation for your active recall check..."
                   value={formData.answer}
                   onChange={(e) => setFormData({ ...formData, answer: e.target.value })}
-                  placeholder="Concise and precise technical explanation..."
-                  className="w-full px-3 py-2 text-sm rounded-md border border-slate-300 focus:outline-hidden focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
+                  className="w-full px-3 py-2 text-sm rounded-xl border border-stone-300 focus:outline-hidden focus:ring-2 focus:ring-stone-900/10 focus:border-stone-900"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="card-code">
+                <label className="block text-xs font-semibold text-stone-700 mb-1">
                   Code Snippet (Optional)
                 </label>
                 <textarea
-                  id="card-code"
-                  rows={4}
+                  rows={3}
+                  placeholder="Paste syntax or example code here..."
                   value={formData.codeSnippet}
                   onChange={(e) => setFormData({ ...formData, codeSnippet: e.target.value })}
-                  placeholder="// Provide code example or syntax demonstration"
-                  className="w-full px-3 py-2 font-mono text-xs rounded-md border border-slate-300 focus:outline-hidden focus:border-slate-900 bg-slate-950 text-slate-100"
+                  className="w-full px-3 py-2 text-xs font-mono rounded-xl border border-stone-300 bg-stone-50 focus:outline-hidden focus:ring-2 focus:ring-stone-900/10 focus:border-stone-900"
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="card-hint">
+                  <label className="block text-xs font-semibold text-stone-700 mb-1">
                     Hint (Optional)
                   </label>
                   <input
-                    id="card-hint"
                     type="text"
+                    placeholder="Small clue if you get stuck..."
                     value={formData.hint}
                     onChange={(e) => setFormData({ ...formData, hint: e.target.value })}
-                    placeholder="e.g. Think about return values"
-                    className="w-full px-3 py-2 text-sm rounded-md border border-slate-300 focus:outline-hidden focus:border-slate-900"
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-stone-300 focus:outline-hidden focus:ring-2 focus:ring-stone-900/10 focus:border-stone-900"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="card-difficulty">
-                    Difficulty
+                  <label className="block text-xs font-semibold text-stone-700 mb-1">
+                    Extended Note (Optional)
                   </label>
-                  <select
-                    id="card-difficulty"
-                    value={formData.difficulty}
-                    onChange={(e) => setFormData({ ...formData, difficulty: e.target.value })}
-                    className="w-full px-3 py-2 text-sm rounded-md border border-slate-300 focus:outline-hidden focus:border-slate-900 bg-white"
-                  >
-                    <option value="Easy">Easy</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Hard">Hard</option>
-                  </select>
+                  <input
+                    type="text"
+                    placeholder="Why this concept matters..."
+                    value={formData.explanation}
+                    onChange={(e) => setFormData({ ...formData, explanation: e.target.value })}
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-stone-300 focus:outline-hidden focus:ring-2 focus:ring-stone-900/10 focus:border-stone-900"
+                  />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="card-explanation">
-                  Explanation / Deep Dive (Optional)
-                </label>
-                <textarea
-                  id="card-explanation"
-                  rows={2}
-                  value={formData.explanation}
-                  onChange={(e) => setFormData({ ...formData, explanation: e.target.value })}
-                  placeholder="Additional architectural context or interviewer follow-up tips..."
-                  className="w-full px-3 py-2 text-sm rounded-md border border-slate-300 focus:outline-hidden focus:border-slate-900"
-                />
-              </div>
-
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-stone-100">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
+                  className="px-4 py-2 text-xs font-semibold text-stone-600 hover:text-stone-900 rounded-xl"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-900 text-white text-xs font-semibold rounded-md hover:bg-slate-800 transition-colors disabled:opacity-60"
+                  className="px-4 py-2 text-xs font-semibold text-white bg-stone-900 hover:bg-stone-800 rounded-xl shadow-2xs disabled:opacity-50"
                 >
-                  {isSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                  <span>{modalMode === 'create' ? 'Save Card' : 'Update Card'}</span>
+                  {isSubmitting ? 'Saving...' : modalMode === 'create' ? 'Add Card' : 'Save Changes'}
                 </button>
               </div>
             </form>
@@ -595,31 +507,27 @@ export default function DeckDetailPage() {
         </div>
       )}
 
-      {/* Delete Card Confirmation Modal */}
+      {/* Delete Card Confirmation */}
       {deleteCardId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-2xs">
-          <div className="bg-white rounded-lg border border-slate-200 shadow-xl max-w-sm w-full p-6">
-            <h3 className="text-base font-bold text-slate-900 mb-2">Delete this flashcard?</h3>
-            <p className="text-xs text-slate-600 mb-6">
-              This card will be permanently removed from this deck.
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-xs">
+          <div className="w-full max-w-sm rounded-2xl bg-white border border-stone-200 shadow-lg p-6 space-y-4">
+            <h2 className="text-base font-bold text-stone-900">Delete this card?</h2>
+            <p className="text-xs text-stone-600 leading-relaxed">
+              This card will be removed from the deck and will no longer appear in your study sessions.
             </p>
-            <div className="flex items-center justify-end gap-2.5">
+            <div className="flex items-center justify-end gap-2 pt-2">
               <button
-                type="button"
-                disabled={isDeleting}
                 onClick={() => setDeleteCardId(null)}
-                className="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
+                className="px-3.5 py-1.5 text-xs font-medium text-stone-600 hover:text-stone-900 rounded-lg"
               >
                 Cancel
               </button>
               <button
-                type="button"
+                onClick={confirmDeleteCard}
                 disabled={isDeleting}
-                onClick={handleDeleteCard}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-rose-600 text-white text-xs font-semibold rounded-md hover:bg-rose-700 transition-colors disabled:opacity-60"
+                className="px-3.5 py-1.5 text-xs font-medium text-white bg-rose-600 hover:bg-rose-500 rounded-lg shadow-2xs disabled:opacity-50"
               >
-                {isDeleting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                <span>Delete Card</span>
+                {isDeleting ? 'Deleting...' : 'Delete'}
               </button>
             </div>
           </div>

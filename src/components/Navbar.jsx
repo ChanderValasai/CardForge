@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Layers, LogOut, User as UserIcon } from 'lucide-react';
+import { BookOpen, Menu, X, LogOut, User as UserIcon, Layers, Compass, RotateCcw, TrendingUp } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 
 export default function Navbar() {
@@ -17,160 +17,201 @@ export default function Navbar() {
 
   const navLinks = isAuthenticated
     ? [
-        { name: 'Dashboard', path: '/dashboard' },
-        { name: 'My Decks', path: '/my-decks' },
-        { name: 'Explore', path: '/explore' },
-        { name: 'Review', path: '/review' },
+        { name: 'Dashboard', path: '/dashboard', icon: Layers },
+        { name: 'My Decks', path: '/my-decks', icon: BookOpen },
+        { name: 'Explore', path: '/explore', icon: Compass },
+        { name: 'Review', path: '/review', icon: RotateCcw },
+        { name: 'Progress', path: '/progress', icon: TrendingUp },
       ]
     : [
-        { name: 'Home', path: '/' },
-        { name: 'Explore Decks', path: '/explore' },
+        { name: 'Home', path: '/', icon: Layers },
+        { name: 'Explore', path: '/explore', icon: Compass },
       ];
 
   const isActive = (path) => {
     if (path === '/') return location.pathname === '/';
-    return location.pathname.startsWith(path);
+    return location.pathname === path || (path !== '/' && location.pathname.startsWith(path));
   };
 
   return (
-    <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-xs border-b border-slate-200">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        {/* Zone 1: Brand Wordmark (Single text element) */}
-        <Link to={isAuthenticated ? '/dashboard' : '/'} className="flex items-center gap-2 group">
-          <span className="w-8 h-8 rounded-md bg-slate-900 text-white flex items-center justify-center font-bold text-base transition-colors group-hover:bg-slate-800">
-            <Layers className="w-4 h-4 text-emerald-400" />
-          </span>
-          <span className="text-lg font-bold tracking-tight text-slate-900">
-            CardForge
-          </span>
-        </Link>
-
-        {/* Zone 2: Navigation Links */}
-        <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-slate-600">
-          {navLinks.map((link) => (
-            <Link
-              key={link.path}
-              to={link.path}
-              className={`transition-colors pb-0.5 border-b-2 ${
-                isActive(link.path)
-                  ? 'border-slate-900 text-slate-900 font-semibold'
-                  : 'border-transparent hover:text-slate-900 hover:border-slate-300'
-              }`}
-            >
-              {link.name}
-            </Link>
-          ))}
-        </nav>
-
-        {/* Zone 3: Primary Actions */}
-        <div className="hidden md:flex items-center gap-3">
-          {isAuthenticated ? (
-            <div className="flex items-center gap-3">
-              <Link
-                to="/profile"
-                className="flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors"
-                title="View Profile"
-              >
-                <span className="w-6 h-6 rounded-full bg-slate-200 text-slate-800 flex items-center justify-center font-bold text-[11px]">
-                  {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
-                </span>
-                <span className="max-w-[120px] truncate">{user?.name}</span>
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-red-700 border border-slate-200 rounded-md hover:border-red-200 hover:bg-red-50/50 transition-colors"
-              >
-                <LogOut className="w-3.5 h-3.5" />
-                <span>Log Out</span>
-              </button>
-            </div>
-          ) : (
-            <>
-              <Link
-                to="/login"
-                className="px-3.5 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors"
-              >
-                Log In
-              </Link>
-              <Link
-                to="/register"
-                className="px-4 py-2 text-xs font-semibold text-white bg-slate-900 rounded-md hover:bg-slate-800 transition-colors whitespace-nowrap"
-              >
-                Get Started
-              </Link>
-            </>
-          )}
-        </div>
-
-        {/* Mobile menu button */}
-        <div className="md:hidden flex items-center">
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 text-slate-600 hover:text-slate-900 focus:outline-hidden"
-            aria-label="Toggle menu"
+    <>
+      <header className="sticky top-0 z-30 bg-[#FAF9F5]/90 backdrop-blur-md border-b border-stone-200/80">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+          {/* Zone 1: Single-element Brand Wordmark */}
+          <Link
+            to={isAuthenticated ? '/dashboard' : '/'}
+            className="flex items-center gap-2.5 text-stone-900 group"
           >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-        </div>
-      </div>
+            <div className="w-8 h-8 rounded-lg bg-stone-900 text-amber-300 flex items-center justify-center transition-transform group-hover:scale-105">
+              <BookOpen className="w-4 h-4" />
+            </div>
+            <span className="text-lg font-bold tracking-tight text-stone-900 font-sans">
+              CardForge
+            </span>
+          </Link>
 
-      {/* Mobile Navigation Drawer */}
-      {mobileMenuOpen && (
-        <div className="md:hidden border-b border-slate-200 bg-white px-4 pt-2 pb-4 space-y-1">
-          {navLinks.map((link) => (
-            <Link
-              key={link.path}
-              to={link.path}
-              onClick={() => setMobileMenuOpen(false)}
-              className={`block px-3 py-2 text-sm rounded-md font-medium ${
-                isActive(link.path)
-                  ? 'bg-slate-100 text-slate-900 font-semibold'
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-              }`}
-            >
-              {link.name}
-            </Link>
-          ))}
-          <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
+          {/* Zone 2: Navigation Links (Clean text links with active indicator) */}
+          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-stone-600">
+            {navLinks.map((link) => {
+              const active = isActive(link.path);
+              return (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`transition-colors py-1 relative ${
+                    active
+                      ? 'text-stone-900 font-semibold'
+                      : 'hover:text-stone-900'
+                  }`}
+                >
+                  <span>{link.name}</span>
+                  {active && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900 rounded-full" />
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* Zone 3: Primary Actions */}
+          <div className="hidden md:flex items-center gap-3">
             {isAuthenticated ? (
-              <>
+              <div className="flex items-center gap-3">
                 <Link
                   to="/profile"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 rounded-md"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold text-stone-700 hover:text-stone-900 hover:bg-stone-200/60 transition-colors"
+                  title="Your Profile"
                 >
-                  <UserIcon className="w-4 h-4 text-slate-500" />
-                  <span>Profile ({user?.name})</span>
+                  <span className="w-6 h-6 rounded-full bg-amber-100 text-amber-900 border border-amber-200 flex items-center justify-center font-bold text-[11px]">
+                    {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                  </span>
+                  <span className="max-w-[120px] truncate">{user?.name}</span>
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-md text-left"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-stone-600 hover:text-stone-900 hover:bg-stone-200/60 rounded-lg transition-colors"
                 >
-                  <LogOut className="w-4 h-4" />
-                  <span>Log Out</span>
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Log out</span>
                 </button>
-              </>
+              </div>
             ) : (
               <>
                 <Link
                   to="/login"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-center px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 rounded-md"
+                  className="px-3.5 py-1.5 text-sm font-medium text-stone-700 hover:text-stone-900 transition-colors"
                 >
-                  Log In
+                  Log in
                 </Link>
                 <Link
                   to="/register"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-center px-4 py-2 text-sm font-semibold text-white bg-slate-900 rounded-md hover:bg-slate-800"
+                  className="px-4 py-2 text-sm font-medium text-white bg-stone-900 rounded-lg hover:bg-stone-800 transition-colors shadow-2xs whitespace-nowrap"
                 >
-                  Get Started
+                  Start Learning
                 </Link>
               </>
             )}
           </div>
+
+          {/* Mobile Menu Toggle Button */}
+          <div className="md:hidden flex items-center">
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 text-stone-700 hover:text-stone-900 focus:outline-hidden"
+              aria-label="Toggle navigation menu"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Navigation Drawer */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-b border-stone-200 bg-[#FAF9F5] px-4 pt-2 pb-4 space-y-1">
+            {navLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-2 text-sm rounded-lg font-medium ${
+                  isActive(link.path)
+                    ? 'bg-stone-200/70 text-stone-900 font-semibold'
+                    : 'text-stone-700 hover:bg-stone-100'
+                }`}
+              >
+                <link.icon className="w-4 h-4 text-stone-500" />
+                <span>{link.name}</span>
+              </Link>
+            ))}
+
+            <div className="pt-3 mt-2 border-t border-stone-200 flex flex-col gap-2">
+              {isAuthenticated ? (
+                <>
+                  <Link
+                    to="/profile"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-stone-700 hover:bg-stone-100 rounded-lg"
+                  >
+                    <UserIcon className="w-4 h-4 text-stone-500" />
+                    <span>Profile ({user?.name})</span>
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-rose-700 hover:bg-rose-50 rounded-lg text-left"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Log out</span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-center px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-100 rounded-lg"
+                  >
+                    Log in
+                  </Link>
+                  <Link
+                    to="/register"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-center px-4 py-2 text-sm font-semibold text-white bg-stone-900 rounded-lg hover:bg-stone-800"
+                  >
+                    Start Learning
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+      </header>
+
+      {/* Mobile Bottom Navigation for quick thumb access when authenticated */}
+      {isAuthenticated && (
+        <nav
+          aria-label="Mobile Navigation"
+          className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-[#FAF9F5]/95 backdrop-blur-md border-t border-stone-200/80 px-2 py-1.5 flex items-center justify-around"
+        >
+          {navLinks.map((link) => {
+            const active = isActive(link.path);
+            const Icon = link.icon;
+            return (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`flex flex-col items-center justify-center py-1 px-3 rounded-lg text-[11px] font-medium transition-colors ${
+                  active
+                    ? 'text-stone-900 font-semibold'
+                    : 'text-stone-500 hover:text-stone-800'
+                }`}
+              >
+                <Icon className={`w-4 h-4 mb-0.5 ${active ? 'text-stone-900' : 'text-stone-400'}`} />
+                <span>{link.name}</span>
+              </Link>
+            );
+          })}
+        </nav>
       )}
-    </header>
+    </>
   );
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, BookOpen, Layers, Loader2, Sparkles, AlertCircle } from 'lucide-react';
-import { fetchDecks, triggerSeedDecks } from '../services/api.js';
+import { Search, Play, ArrowRight, BookOpen } from 'lucide-react';
+import { fetchDecks } from '../services/api.js';
 
 export default function ExplorePage() {
   const [decks, setDecks] = useState([]);
@@ -9,19 +9,17 @@ export default function ExplorePage() {
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [isSeeding, setIsSeeding] = useState(false);
 
   const categories = [
     'All',
     'JavaScript',
     'React',
-    'Databases',
+    'SQL',
+    'Computer Science',
     'Web Development',
-    'Backend',
-    'General',
   ];
 
-  const loadExploreDecks = async () => {
+  const loadDecks = async () => {
     setLoading(true);
     setError('');
     try {
@@ -32,169 +30,148 @@ export default function ExplorePage() {
       });
       setDecks(data.decks || []);
     } catch (err) {
-      setError(err.message || 'Failed to load explore decks.');
+      setError(err.message || 'Failed to load decks.');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    const delayDebounce = setTimeout(() => {
-      loadExploreDecks();
-    }, 250);
+    const timer = setTimeout(() => {
+      loadDecks();
+    }, 200);
 
-    return () => clearTimeout(delayDebounce);
+    return () => clearTimeout(timer);
   }, [searchTerm, selectedCategory]);
 
-  const handleSeedDecks = async () => {
-    setIsSeeding(true);
-    try {
-      await triggerSeedDecks();
-      await loadExploreDecks();
-    } catch (err) {
-      setError(err.message || 'Failed to populate seed decks.');
-    } finally {
-      setIsSeeding(false);
+  const getCategoryStyles = (category) => {
+    const cat = (category || '').toLowerCase();
+    if (cat.includes('javascript') || cat.includes('js')) {
+      return { border: 'border-l-amber-500', badge: 'text-amber-800 bg-amber-50/80' };
     }
+    if (cat.includes('react')) {
+      return { border: 'border-l-blue-500', badge: 'text-blue-800 bg-blue-50/80' };
+    }
+    if (cat.includes('sql') || cat.includes('database')) {
+      return { border: 'border-l-emerald-500', badge: 'text-emerald-800 bg-emerald-50/80' };
+    }
+    if (cat.includes('computer science') || cat.includes('typescript')) {
+      return { border: 'border-l-purple-500', badge: 'text-purple-800 bg-purple-50/80' };
+    }
+    return { border: 'border-l-stone-400', badge: 'text-stone-700 bg-stone-100' };
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
-      <div className="mb-8">
-        <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md mb-2">
-          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-          <span>Curated Technical Material</span>
-        </div>
-        <h1 className="text-2xl font-bold text-slate-900">Explore Decks</h1>
-        <p className="text-sm text-slate-600 mt-1">
-          Explore curated technical decks to prepare for software engineering interviews.
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-8">
+      {/* Page Header */}
+      <div>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-stone-900">
+          Explore
+        </h1>
+        <p className="text-sm text-stone-600 mt-1">
+          Find something interesting to learn.
         </p>
       </div>
 
-      {error && (
-        <div className="mb-6 p-3 bg-red-50 border border-red-200 text-red-800 text-xs rounded-md flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
-          <span>{error}</span>
-        </div>
-      )}
-
-      {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between mb-8 pb-6 border-b border-slate-200">
-        <div className="relative flex-1 max-w-md">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+      {/* Search & Category Filter */}
+      <div className="space-y-3">
+        {/* Simple Search Input */}
+        <div className="relative">
+          <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
-            placeholder="Search decks by title or keyword..."
+            placeholder="Search topics, questions, or concepts..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 text-sm rounded-md border border-slate-300 focus:outline-hidden focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-stone-200/90 text-sm focus:outline-hidden focus:ring-2 focus:ring-stone-900/10 focus:border-stone-900 shadow-2xs"
           />
         </div>
 
-        {/* Category Tabs (Segmented control) */}
-        <div className="flex flex-wrap items-center gap-1.5 p-1 bg-slate-100 rounded-lg">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
-                selectedCategory === cat
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+        {/* Category Filter Pills (Functional Buttons) */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+          {categories.map((cat) => {
+            const isSelected = selectedCategory === cat;
+            return (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
+                  isSelected
+                    ? 'bg-stone-900 text-white shadow-2xs'
+                    : 'bg-white border border-stone-200/80 text-stone-600 hover:text-stone-900 hover:bg-stone-50'
+                }`}
+              >
+                {cat}
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Main Grid Area */}
+      {/* Decks Catalog */}
       {loading ? (
-        <div className="py-20 flex flex-col items-center justify-center text-slate-400">
-          <Loader2 className="w-6 h-6 animate-spin mb-3 text-slate-900" />
-          <span className="text-xs font-medium">Loading explore decks...</span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="h-44 bg-stone-200/80 rounded-2xl animate-pulse" />
+          <div className="h-44 bg-stone-200/80 rounded-2xl animate-pulse" />
         </div>
       ) : decks.length === 0 ? (
-        <div className="bg-white border border-slate-200 rounded-lg p-10 text-center shadow-2xs my-6">
-          <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center mx-auto mb-3">
-            <Layers className="w-6 h-6" />
-          </div>
-          <h3 className="text-base font-semibold text-slate-900 mb-1">
-            No decks found matching your filters
-          </h3>
-          <p className="text-sm text-slate-500 max-w-md mx-auto mb-6">
-            Try adjusting your search criteria or load the standard technical interview seed decks.
-          </p>
-          <div className="flex items-center justify-center gap-3">
-            <button
-              onClick={handleSeedDecks}
-              disabled={isSeeding}
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-900 text-white text-xs font-semibold rounded-md hover:bg-slate-800 transition-colors disabled:opacity-60"
-            >
-              {isSeeding && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-              <span>Restore Seed Decks</span>
-            </button>
-            <button
-              onClick={() => {
-                setSearchTerm('');
-                setSelectedCategory('All');
-              }}
-              className="px-3.5 py-2 border border-slate-300 text-slate-700 text-xs font-semibold rounded-md hover:bg-slate-50 transition-colors"
-            >
-              Clear Filters
-            </button>
-          </div>
+        <div className="p-10 rounded-2xl bg-white border border-stone-200/90 text-center space-y-2">
+          <p className="text-sm font-semibold text-stone-900">No decks found</p>
+          <p className="text-xs text-stone-500">Try adjusting your search terms or filter.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {decks.map((deck) => (
-            <div
-              key={deck._id}
-              className="p-6 bg-white border border-slate-200 rounded-lg flex flex-col justify-between hover:border-slate-300 transition-all shadow-2xs"
-            >
-              <div>
-                <div className="flex items-center justify-between gap-2 mb-2.5">
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
-                    {deck.category}
-                  </span>
-                  <span
-                    className={`text-[10px] font-semibold px-2 py-0.5 rounded ${
-                      deck.difficulty === 'Beginner'
-                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                        : deck.difficulty === 'Intermediate'
-                        ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                        : 'bg-rose-50 text-rose-700 border border-rose-200'
-                    }`}
-                  >
-                    {deck.difficulty}
-                  </span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+          {decks.map((deck) => {
+            const styles = getCategoryStyles(deck.category);
+
+            return (
+              <div
+                key={deck._id}
+                className={`p-5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs hover:shadow-xs transition-shadow border-l-4 ${styles.border} flex flex-col justify-between`}
+              >
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs text-stone-500">
+                    <span className={`px-2 py-0.5 rounded-md font-medium text-[11px] ${styles.badge}`}>
+                      {deck.category || 'General'}
+                    </span>
+                    <span className="font-mono text-stone-500">
+                      {deck.cardCount || 0} card{deck.cardCount === 1 ? '' : 's'}
+                    </span>
+                  </div>
+
+                  <h3 className="text-base font-bold text-stone-900 leading-snug">
+                    {deck.title}
+                  </h3>
+
+                  <p className="text-xs sm:text-sm text-stone-600 line-clamp-2 leading-relaxed">
+                    {deck.description || 'Curated study deck for active recall practice.'}
+                  </p>
                 </div>
 
-                <h2 className="text-lg font-bold text-slate-900 mb-2 line-clamp-1">
-                  {deck.title}
-                </h2>
+                <div className="pt-4 mt-3 border-t border-stone-100 flex items-center justify-between">
+                  <span className="text-[11px] font-medium text-stone-400 capitalize">
+                    {deck.difficulty || 'beginner'}
+                  </span>
 
-                <p className="text-sm text-slate-600 leading-relaxed mb-6 line-clamp-2 min-h-[40px]">
-                  {deck.description || 'Curated flashcard collection for interview review.'}
-                </p>
-              </div>
-
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-xs text-slate-500 font-mono">
-                  <Layers className="w-3.5 h-3.5 text-slate-400" />
-                  <span>{deck.cardCount || 0} cards</span>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      to={`/my-decks/${deck._id}`}
+                      className="px-3 py-1.5 rounded-lg border border-stone-200 text-stone-700 hover:bg-stone-50 text-xs font-medium transition-colors"
+                    >
+                      Preview
+                    </Link>
+                    <Link
+                      to={`/study/${deck._id}`}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold transition-colors shadow-2xs"
+                    >
+                      <Play className="w-3 h-3 fill-current text-amber-300" />
+                      <span>Study</span>
+                    </Link>
+                  </div>
                 </div>
-                <Link
-                  to={`/study/${deck._id}`}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-slate-900 text-white text-xs font-semibold rounded-md hover:bg-slate-800 transition-colors"
-                >
-                  <BookOpen className="w-3.5 h-3.5" />
-                  <span>Study Deck</span>
-                </Link>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

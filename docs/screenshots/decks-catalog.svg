@@ -1,117 +1,191 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 640" width="100%" height="100%">
   <defs>
-    <filter id="deck-card-shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
-      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.04" />
-      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#0f172a" flood-opacity="0.02" />
+    <filter id="soft-shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#1c1917" flood-opacity="0.05" />
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#1c1917" flood-opacity="0.03" />
     </filter>
   </defs>
 
-  <!-- Background -->
-  <rect width="1000" height="620" fill="#f8fafc" />
+  <!-- Warm Canvas Background -->
+  <rect width="1000" height="640" fill="#FAF9F5" />
 
   <!-- Navbar -->
-  <rect width="1000" height="56" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" />
-  <rect x="40" y="14" width="28" height="28" rx="6" fill="#0f172a" />
-  <path d="M47 28 L54 21 L61 28 L54 35 Z" fill="#34d399" />
-  <text x="76" y="33" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="16" font-weight="700" fill="#0f172a">CardForge</text>
-  <text x="180" y="33" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="500" fill="#64748b">Dashboard</text>
-  <text x="270" y="33" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="500" fill="#64748b">My Decks</text>
-  <text x="360" y="33" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="600" fill="#0f172a">Explore</text>
-  <line x1="360" y1="42" x2="408" y2="42" stroke="#0f172a" stroke-width="2" />
-  <text x="440" y="33" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="500" fill="#64748b">Review Queue</text>
+  <rect width="1000" height="56" fill="#FAF9F5" stroke="#e7e5e4" stroke-width="1" />
+  <rect x="50" y="14" width="28" height="28" rx="7" fill="#1c1917" />
+  <path d="M57 28 L64 21 L71 28 L64 35 Z" fill="#fcd34d" />
+  <text x="88" y="33" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="16" font-weight="700" letter-spacing="-0.3" fill="#1c1917">CardForge</text>
+
+  <!-- Nav links -->
+  <text x="200" y="33" font-family="'Inter', system-ui, sans-serif" font-size="13" font-weight="500" fill="#78716c">Dashboard</text>
+  <text x="290" y="33" font-family="'Inter', system-ui, sans-serif" font-size="13" font-weight="500" fill="#78716c">My Decks</text>
+  <text x="375" y="33" font-family="'Inter', system-ui, sans-serif" font-size="13" font-weight="600" fill="#1c1917">Explore</text>
+  <line x1="375" y1="42" x2="430" y2="42" stroke="#1c1917" stroke-width="2" stroke-linecap="round" />
+  <text x="450" y="33" font-family="'Inter', system-ui, sans-serif" font-size="13" font-weight="500" fill="#78716c">Review</text>
+  <text x="525" y="33" font-family="'Inter', system-ui, sans-serif" font-size="13" font-weight="500" fill="#78716c">Progress</text>
+
+  <!-- Profile Chip -->
+  <rect x="840" y="14" width="110" height="28" rx="8" fill="#f5f5f4" stroke="#e7e5e4" stroke-width="1" />
+  <circle cx="856" cy="28" r="8" fill="#fef3c7" stroke="#fde68a" stroke-width="1" />
+  <text x="853" y="31" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="700" fill="#92400e">A</text>
+  <text x="872" y="32" font-family="'Inter', sans-serif" font-size="11" font-weight="600" fill="#44403c">Alex Chen</text>
 
   <!-- Page Header -->
-  <g transform="translate(60, 80)">
-    <text x="0" y="24" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="22" font-weight="800" fill="#0f172a">Explore Technical Interview Decks</text>
-    <text x="0" y="44" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" fill="#64748b">Curated flashcard collections designed for software engineering interviews</text>
+  <g transform="translate(70, 78)">
+    <text x="0" y="24" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="24" font-weight="700" letter-spacing="-0.4" fill="#1c1917">Explore</text>
+    <text x="0" y="46" font-family="'Inter', system-ui, sans-serif" font-size="13" font-weight="400" fill="#78716c">Find something interesting to learn.</text>
 
-    <!-- Filter Pills -->
-    <g transform="translate(0, 60)">
-      <rect x="0" y="0" width="46" height="28" rx="6" fill="#0f172a" />
-      <text x="16" y="18" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="600" fill="#ffffff">All</text>
+    <!-- Search Input -->
+    <g transform="translate(0, 62)">
+      <rect width="860" height="42" rx="10" fill="#ffffff" stroke="#e7e5e4" stroke-width="1" />
+      <circle cx="22" cy="21" r="5" fill="none" stroke="#a8a29e" stroke-width="1.5" />
+      <line x1="26" y1="25" x2="31" y2="30" stroke="#a8a29e" stroke-width="1.5" stroke-linecap="round" />
+      <text x="42" y="26" font-family="'Inter', sans-serif" font-size="13" font-weight="400" fill="#a8a29e">Search topics, questions, or concepts...</text>
+    </g>
 
-      <rect x="56" y="0" width="86" height="28" rx="6" fill="#ffffff" stroke="#e2e8f0" />
-      <text x="68" y="18" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="600" fill="#475569">JavaScript</text>
+    <!-- Filter Buttons -->
+    <g transform="translate(0, 116)">
+      <!-- All Button (Active) -->
+      <rect x="0" y="0" width="46" height="30" rx="8" fill="#1c1917" />
+      <text x="16" y="19" font-family="'Inter', sans-serif" font-size="12" font-weight="600" fill="#ffffff">All</text>
 
-      <rect x="152" y="0" width="60" height="28" rx="6" fill="#ffffff" stroke="#e2e8f0" />
-      <text x="164" y="18" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="600" fill="#475569">React</text>
+      <!-- JavaScript -->
+      <rect x="54" y="0" width="90" height="30" rx="8" fill="#ffffff" stroke="#e7e5e4" stroke-width="1" />
+      <text x="68" y="19" font-family="'Inter', sans-serif" font-size="12" font-weight="500" fill="#57534e">JavaScript</text>
 
-      <rect x="222" y="0" width="54" height="28" rx="6" fill="#ffffff" stroke="#e2e8f0" />
-      <text x="234" y="18" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="600" fill="#475569">SQL</text>
+      <!-- React -->
+      <rect x="152" y="0" width="65" height="30" rx="8" fill="#ffffff" stroke="#e7e5e4" stroke-width="1" />
+      <text x="166" y="19" font-family="'Inter', sans-serif" font-size="12" font-weight="500" fill="#57534e">React</text>
 
-      <rect x="286" y="0" width="82" height="28" rx="6" fill="#ffffff" stroke="#e2e8f0" />
-      <text x="298" y="18" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="600" fill="#475569">TypeScript</text>
+      <!-- SQL -->
+      <rect x="225" y="0" width="58" height="30" rx="8" fill="#ffffff" stroke="#e7e5e4" stroke-width="1" />
+      <text x="240" y="19" font-family="'Inter', sans-serif" font-size="12" font-weight="500" fill="#57534e">SQL</text>
+
+      <!-- Computer Science -->
+      <rect x="291" y="0" width="135" height="30" rx="8" fill="#ffffff" stroke="#e7e5e4" stroke-width="1" />
+      <text x="305" y="19" font-family="'Inter', sans-serif" font-size="12" font-weight="500" fill="#57534e">Computer Science</text>
     </g>
   </g>
 
-  <!-- 4 Deck Cards Grid -->
-  <g transform="translate(60, 185)">
-    <!-- Deck 1 -->
+  <!-- 4 Decks Grid -->
+  <g transform="translate(70, 246)">
+    <!-- Card 1: JavaScript (Amber Accent) -->
     <g transform="translate(0, 0)">
-      <rect width="425" height="185" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" filter="url(#deck-card-shadow)" />
-      <rect x="16" y="16" width="75" height="18" rx="4" fill="#f1f5f9" />
-      <text x="24" y="29" font-family="monospace" font-size="10" font-weight="700" fill="#475569">JAVASCRIPT</text>
-      <text x="350" y="29" font-family="monospace" font-size="11" fill="#64748b">5 cards</text>
+      <rect width="420" height="175" rx="14" fill="#ffffff" stroke="#e7e5e4" stroke-width="1" filter="url(#soft-shadow)" />
+      <path d="M0 14 Q0 0 14 0 L14 175 Q0 175 0 161 Z" fill="#f59e0b" />
 
-      <text x="16" y="60" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="16" font-weight="700" fill="#0f172a">JavaScript Basics & Core</text>
-      <text x="16" y="84" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" fill="#64748b">Event loop, closure scopes, hoisting, microtasks, and prototypes.</text>
+      <g transform="translate(24, 20)">
+        <rect x="0" y="0" width="76" height="20" rx="5" fill="#fffbeb" />
+        <text x="8" y="14" font-family="'Inter', sans-serif" font-size="10.5" font-weight="600" fill="#92400e">JavaScript</text>
+        <text x="375" y="14" text-anchor="end" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="500" fill="#a8a29e">5 cards</text>
 
-      <line x1="16" y1="125" x2="409" y2="125" stroke="#f1f5f9" stroke-width="1" />
-      <rect x="16" y="138" width="70" height="20" rx="4" fill="#ecfdf5" />
-      <text x="24" y="152" font-family="monospace" font-size="10" font-weight="600" fill="#065f46">BEGINNER</text>
-      <rect x="330" y="135" width="80" height="28" rx="6" fill="#0f172a" />
-      <text x="352" y="153" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="600" fill="#ffffff">▶ Study</text>
+        <text x="0" y="44" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="15" font-weight="700" letter-spacing="-0.2" fill="#1c1917">
+          JavaScript Fundamentals
+        </text>
+        <text x="0" y="66" font-family="'Inter', system-ui, sans-serif" font-size="12" font-weight="400" fill="#78716c">
+          Scope, closures, event loop, hoisting, and prototype inheritance.
+        </text>
+
+        <line x1="0" y1="102" x2="375" y2="102" stroke="#f5f5f4" stroke-width="1" />
+        <text x="0" y="126" font-family="'Inter', sans-serif" font-size="11" font-weight="500" fill="#a8a29e">Beginner</text>
+
+        <g transform="translate(245, 110)">
+          <rect width="60" height="26" rx="7" fill="#ffffff" stroke="#e7e5e4" stroke-width="1" />
+          <text x="12" y="17" font-family="'Inter', sans-serif" font-size="11" font-weight="500" fill="#57534e">Preview</text>
+
+          <rect x="68" y="0" width="62" height="26" rx="7" fill="#1c1917" />
+          <text x="80" y="17" font-family="'Inter', sans-serif" font-size="11" font-weight="600" fill="#ffffff">▶ Study</text>
+        </g>
+      </g>
     </g>
 
-    <!-- Deck 2 -->
-    <g transform="translate(455, 0)">
-      <rect width="425" height="185" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" filter="url(#deck-card-shadow)" />
-      <rect x="16" y="16" width="55" height="18" rx="4" fill="#f1f5f9" />
-      <text x="24" y="29" font-family="monospace" font-size="10" font-weight="700" fill="#475569">REACT</text>
-      <text x="350" y="29" font-family="monospace" font-size="11" fill="#64748b">5 cards</text>
+    <!-- Card 2: React (Blue Accent) -->
+    <g transform="translate(440, 0)">
+      <rect width="420" height="175" rx="14" fill="#ffffff" stroke="#e7e5e4" stroke-width="1" filter="url(#soft-shadow)" />
+      <path d="M0 14 Q0 0 14 0 L14 175 Q0 175 0 161 Z" fill="#3b82f6" />
 
-      <text x="16" y="60" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="16" font-weight="700" fill="#0f172a">React Fundamentals</text>
-      <text x="16" y="84" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" fill="#64748b">Virtual DOM reconciliation, hooks lifecycle, memoization & context.</text>
+      <g transform="translate(24, 20)">
+        <rect x="0" y="0" width="50" height="20" rx="5" fill="#eff6ff" />
+        <text x="8" y="14" font-family="'Inter', sans-serif" font-size="10.5" font-weight="600" fill="#1e40af">React</text>
+        <text x="375" y="14" text-anchor="end" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="500" fill="#a8a29e">5 cards</text>
 
-      <line x1="16" y1="125" x2="409" y2="125" stroke="#f1f5f9" stroke-width="1" />
-      <rect x="16" y="138" width="90" height="20" rx="4" fill="#eff6ff" />
-      <text x="24" y="152" font-family="monospace" font-size="10" font-weight="600" fill="#1e40af">INTERMEDIATE</text>
-      <rect x="330" y="135" width="80" height="28" rx="6" fill="#0f172a" />
-      <text x="352" y="153" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="600" fill="#ffffff">▶ Study</text>
+        <text x="0" y="44" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="15" font-weight="700" letter-spacing="-0.2" fill="#1c1917">
+          React Fundamentals
+        </text>
+        <text x="0" y="66" font-family="'Inter', system-ui, sans-serif" font-size="12" font-weight="400" fill="#78716c">
+          Virtual DOM reconciliation, hooks lifecycle, memoization, and props.
+        </text>
+
+        <line x1="0" y1="102" x2="375" y2="102" stroke="#f5f5f4" stroke-width="1" />
+        <text x="0" y="126" font-family="'Inter', sans-serif" font-size="11" font-weight="500" fill="#a8a29e">Intermediate</text>
+
+        <g transform="translate(245, 110)">
+          <rect width="60" height="26" rx="7" fill="#ffffff" stroke="#e7e5e4" stroke-width="1" />
+          <text x="12" y="17" font-family="'Inter', sans-serif" font-size="11" font-weight="500" fill="#57534e">Preview</text>
+
+          <rect x="68" y="0" width="62" height="26" rx="7" fill="#1c1917" />
+          <text x="80" y="17" font-family="'Inter', sans-serif" font-size="11" font-weight="600" fill="#ffffff">▶ Study</text>
+        </g>
+      </g>
     </g>
 
-    <!-- Deck 3 -->
-    <g transform="translate(0, 205)">
-      <rect width="425" height="185" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" filter="url(#deck-card-shadow)" />
-      <rect x="16" y="16" width="45" height="18" rx="4" fill="#f1f5f9" />
-      <text x="24" y="29" font-family="monospace" font-size="10" font-weight="700" fill="#475569">SQL</text>
-      <text x="350" y="29" font-family="monospace" font-size="11" fill="#64748b">4 cards</text>
+    <!-- Card 3: SQL (Emerald Accent) -->
+    <g transform="translate(0, 195)">
+      <rect width="420" height="175" rx="14" fill="#ffffff" stroke="#e7e5e4" stroke-width="1" filter="url(#soft-shadow)" />
+      <path d="M0 14 Q0 0 14 0 L14 175 Q0 175 0 161 Z" fill="#10b981" />
 
-      <text x="16" y="60" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="16" font-weight="700" fill="#0f172a">SQL Queries & Optimization</text>
-      <text x="16" y="84" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" fill="#64748b">Joins, indexes, B-trees, aggregate functions, and execution plans.</text>
+      <g transform="translate(24, 20)">
+        <rect x="0" y="0" width="45" height="20" rx="5" fill="#ecfdf5" />
+        <text x="8" y="14" font-family="'Inter', sans-serif" font-size="10.5" font-weight="600" fill="#065f46">SQL</text>
+        <text x="375" y="14" text-anchor="end" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="500" fill="#a8a29e">4 cards</text>
 
-      <line x1="16" y1="125" x2="409" y2="125" stroke="#f1f5f9" stroke-width="1" />
-      <rect x="16" y="138" width="90" height="20" rx="4" fill="#eff6ff" />
-      <text x="24" y="152" font-family="monospace" font-size="10" font-weight="600" fill="#1e40af">INTERMEDIATE</text>
-      <rect x="330" y="135" width="80" height="28" rx="6" fill="#0f172a" />
-      <text x="352" y="153" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="600" fill="#ffffff">▶ Study</text>
+        <text x="0" y="44" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="15" font-weight="700" letter-spacing="-0.2" fill="#1c1917">
+          SQL Queries &amp; Joins
+        </text>
+        <text x="0" y="66" font-family="'Inter', system-ui, sans-serif" font-size="12" font-weight="400" fill="#78716c">
+          INNER JOIN, LEFT JOIN, indexes, B-trees, and query execution plans.
+        </text>
+
+        <line x1="0" y1="102" x2="375" y2="102" stroke="#f5f5f4" stroke-width="1" />
+        <text x="0" y="126" font-family="'Inter', sans-serif" font-size="11" font-weight="500" fill="#a8a29e">Intermediate</text>
+
+        <g transform="translate(245, 110)">
+          <rect width="60" height="26" rx="7" fill="#ffffff" stroke="#e7e5e4" stroke-width="1" />
+          <text x="12" y="17" font-family="'Inter', sans-serif" font-size="11" font-weight="500" fill="#57534e">Preview</text>
+
+          <rect x="68" y="0" width="62" height="26" rx="7" fill="#1c1917" />
+          <text x="80" y="17" font-family="'Inter', sans-serif" font-size="11" font-weight="600" fill="#ffffff">▶ Study</text>
+        </g>
+      </g>
     </g>
 
-    <!-- Deck 4 -->
-    <g transform="translate(455, 205)">
-      <rect width="425" height="185" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" filter="url(#deck-card-shadow)" />
-      <rect x="16" y="16" width="80" height="18" rx="4" fill="#f1f5f9" />
-      <text x="24" y="29" font-family="monospace" font-size="10" font-weight="700" fill="#475569">TYPESCRIPT</text>
-      <text x="350" y="29" font-family="monospace" font-size="11" fill="#64748b">4 cards</text>
+    <!-- Card 4: TypeScript (Purple Accent) -->
+    <g transform="translate(440, 195)">
+      <rect width="420" height="175" rx="14" fill="#ffffff" stroke="#e7e5e4" stroke-width="1" filter="url(#soft-shadow)" />
+      <path d="M0 14 Q0 0 14 0 L14 175 Q0 175 0 161 Z" fill="#8b5cf6" />
 
-      <text x="16" y="60" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="16" font-weight="700" fill="#0f172a">TypeScript Generics & Types</text>
-      <text x="16" y="84" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" fill="#64748b">Conditional types, infer keyword, utility types, and branded primitives.</text>
+      <g transform="translate(24, 20)">
+        <rect x="0" y="0" width="78" height="20" rx="5" fill="#f5f3ff" />
+        <text x="8" y="14" font-family="'Inter', sans-serif" font-size="10.5" font-weight="600" fill="#5b21b6">TypeScript</text>
+        <text x="375" y="14" text-anchor="end" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="500" fill="#a8a29e">4 cards</text>
 
-      <line x1="16" y1="125" x2="409" y2="125" stroke="#f1f5f9" stroke-width="1" />
-      <rect x="16" y="138" width="75" height="20" rx="4" fill="#fef2f2" />
-      <text x="24" y="152" font-family="monospace" font-size="10" font-weight="600" fill="#991b1b">ADVANCED</text>
-      <rect x="330" y="135" width="80" height="28" rx="6" fill="#0f172a" />
-      <text x="352" y="153" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="600" fill="#ffffff">▶ Study</text>
+        <text x="0" y="44" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="15" font-weight="700" letter-spacing="-0.2" fill="#1c1917">
+          TypeScript &amp; Types
+        </text>
+        <text x="0" y="66" font-family="'Inter', system-ui, sans-serif" font-size="12" font-weight="400" fill="#78716c">
+          Interfaces, union types, generics, conditional types, and narrowing.
+        </text>
+
+        <line x1="0" y1="102" x2="375" y2="102" stroke="#f5f5f4" stroke-width="1" />
+        <text x="0" y="126" font-family="'Inter', sans-serif" font-size="11" font-weight="500" fill="#a8a29e">Advanced</text>
+
+        <g transform="translate(245, 110)">
+          <rect width="60" height="26" rx="7" fill="#ffffff" stroke="#e7e5e4" stroke-width="1" />
+          <text x="12" y="17" font-family="'Inter', sans-serif" font-size="11" font-weight="500" fill="#57534e">Preview</text>
+
+          <rect x="68" y="0" width="62" height="26" rx="7" fill="#1c1917" />
+          <text x="80" y="17" font-family="'Inter', sans-serif" font-size="11" font-weight="600" fill="#ffffff">▶ Study</text>
+        </g>
+      </g>
     </g>
   </g>
 </svg>
