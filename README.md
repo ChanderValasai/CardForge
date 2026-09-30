@@ -172,7 +172,7 @@ CardForge uses an adapted SuperMemo SM-2 algorithm to schedule review intervals:
 
 ### 1. Clone & Install Dependencies
 ```bash
-git clone https://github.com/your-username/cardforge.git
+git clone https://github.com/ChanderValasai/cardforge.git
 cd cardforge
 npm install
 ```
